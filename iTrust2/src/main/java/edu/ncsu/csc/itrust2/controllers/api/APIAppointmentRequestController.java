@@ -242,7 +242,7 @@ public class APIAppointmentRequestController extends APIController {
         }
     }
 
-    /**
+    /** 
      * View Appointments will retrieve and display all appointments for the
      * logged-in HCP that are in "approved" status
      *

@@ -1,0 +1,138 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:include="layout :: head(title=~{::title},links=~{})">
+<title>Food Diary Directory</title>
+</head>
+<body th:include="layout :: body" th:with="content=~{::content}">
+	<div th:fragment="content">
+		<h1>Search for Patient's Food Diary</h1>
+		<div ng-app="diaryApp" ng-controller="diaryCtrl as ctrl">
+			<div class="container">
+				<div class="row">
+					<div class="col-md-12">
+						<div class="panel panel-primary">
+	
+							<!-- log entry header -->
+							<div class="panel-heading">
+								<h3></h3>
+							</div>
+							<div class="panel-body">
+								<table class="table table-bordered" name="log_table">
+	
+									<!-- table column headers -->
+									<thead>
+										<tr>
+											<th>Date</th>
+											<th>Meal</th>
+											<th>Food Name</th>
+											<th>Servings</th>
+											<th>Calories (per serving)</th>
+											<th>Fat (g)</th>
+											<th>Sodium (mg)</th>
+											<th>Carbs (g)</th>
+											<th>Sugar (g)</th>
+											<th>Fiber (g)</th>
+											<th>Protein (g)</th>
+										</tr>
+									</thead>
+	
+									<!-- Diary Entry for every row, ordered by date -->
+									<tbody>
+										<tr name="diaryTableRow" ng-repeat="e in ctrl.diaryEntries">
+											<td name="dateCell">{{e.date}}</td>
+											<td name="mealCell">{{e.meal}}</td>
+											<td name="nameCell">{{e.name}}</td>
+											<td name="servingsCell">{{e.servings}}</td>
+											<td name="caloriesCell">{{e.calories}}</td>
+											<td name="fatCell">{{e.fat}}</td>
+											<td name="sodiumCell">{{e.soduim}}</td>
+											<td name="carbsCell">{{e.carbs}}</td>
+											<td name="sugarCell">{{e.sugar}}</td>
+											<td name="fiberCell">{{e.fiber}}</td>
+											<td name="proteinCell">{{e.protein}}</td>
+										</tr>
+									</tbody>
+								</table>
+								
+								
+							<br>
+
+							<!-- container for searching diary entries -->
+							<div class="row">
+								<div class="col-md-12">
+									<div class="panel panel-default">
+										<div class="panel-heading ">Search Food Diary Entries by Patient</div>
+										<div class="panel-body">
+											<form class="form-horizontal" role="form" name="viewLogForm"
+												ng-submit="ctrl.searchByDate()">
+												<br>
+
+												<!-- row that contains all interactive fields -->
+												<div class="row">
+
+													<!-- start date -->
+													<div class="col-md-6">
+														<label>Patient name:</label>
+														<div class="row">
+															<div class="col-md-7">
+																<input type="text" class="form-control"
+																	placeholder="Ex. John Doe" name="patientName"
+																	ng-model="ctrl.patientName" required />
+															</div>
+														</div>
+													</div>
+
+													<!-- submit button -->
+													<div class="col-md-6">
+														<label>Submit:</label>
+														<div class="row">
+															<div class="col-md-4">
+																<button type="submit" class="btn btn-success"
+																	ng-disabled="!viewLogForm.$valid"
+																	name="submit">Search For Diary Entries</button>
+															</div>
+														</div>
+													</div>
+
+												</div>
+											</form>
+											<br/>	
+										</div>
+									</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<script>
+			var App = angular.module('diaryApp',[]);
+			
+			angular.module("diaryApp").controller('diaryCtrl', function($scope, $http, $filter) {
+				var self = this;
+				self.diaryEntries = [];
+				self.patientName = "";
+				
+				// fills in diary with fake entries
+				for (var i = 0; i < 10; i++) {
+					self.diaryEntries.push({
+						date: "12/10/1996",
+						meal: "lunch",
+						name: "bagel",
+						servings: i % 3 + 1,
+						calories: i * 13 + 100,
+						fat: i * 4 + i % 2,
+						soduim: i + (i % 2) * 3,
+						carbs: i % 3 * 2,
+						sugar: i % 2 + 10 + i,
+						fiber: i + i % 3,
+						protein: i % 4 
+					});
+					
+				}
+				
+				
+			});
+			</script>
+		</div>
+	</div>
+</body>
+</html>

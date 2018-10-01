@@ -7,6 +7,8 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
 import org.hibernate.validator.constraints.NotEmpty;
+
+import edu.ncsu.csc.itrust2.models.persistent.DiaryEntry;
 /** 
  * This is the in-memory object that is used for saving a DiaryEntry form.
  * It is vaildated and converted into an AppointmentRequest object for persistence.  
@@ -25,7 +27,7 @@ public class DiaryEntryForm {
 	 */
 	public DiaryEntryForm( final DiaryEntry de) {
 		final SimpleDateFormat dateTemp = new SimpleDateFormat( "MM/dd/YYYY", Locale.ENGLISH );
-		setEntryDate( dateTemp.format( de.getDate().getTime()));
+		setEntryDate( dateTemp.format( de.getDate()));
 		setEntryMeal( de.getMeal());
 		setEntryName( de.getName());
 		setEntryServings( de.getServings() );
@@ -57,6 +59,18 @@ public class DiaryEntryForm {
 	
 	/** the Entry sodium **/
 	private int entrySodium;
+	
+	/** the entry crads **/
+	private int entryCarbs;
+	
+	/** the entry sugar **/
+	private int entrySugars;
+	
+	/** the entry Fibers **/
+	private int entryFibers;
+	
+	/** the entry Protein **/
+	private int entryProtein;
 	
 	/**
 	 * Don't use this one. For Hibernate/Thymelaef
@@ -189,6 +203,78 @@ public class DiaryEntryForm {
 	 */
 	public void setEntrySodium(int entrySodium) {
 		this.entrySodium = entrySodium;
+	}
+
+	/**
+	 * get the entry crabs
+	 * 
+	 * @return the entry crabs of the form
+	 */
+	public int getEntryCarbs() {
+		return entryCarbs;
+	}
+
+	/**
+	 * set the entry carbs
+	 * 
+	 * @param entryCarbs the entry carbs 
+	 */
+	public void setEntryCarbs(int entryCarbs) {
+		this.entryCarbs = entryCarbs;
+	}
+
+	/**
+	 * get the entry sugar
+	 * 
+	 * @return the entry sugars
+	 */
+	public int getEntrySugars() {
+		return entrySugars;
+	}
+
+	/**
+	 * set the entry sugars
+	 * 
+	 * @param entrySugars the entry sugars 
+	 */
+	public void setEntrySugars(int entrySugars) {
+		this.entrySugars = entrySugars;
+	}
+
+	/**
+	 * get the entry fibers
+	 * 
+	 * @return the get entry fibers
+	 */
+	public int getEntryFibers() {
+		return entryFibers;
+	}
+
+	/**
+	 * the set entry fibers
+	 * 
+	 * @param entryFibers the entry fibers
+	 */
+	public void setEntryFibers(int entryFibers) {
+		this.entryFibers = entryFibers;
+	}
+
+	/**
+	 * set the entry proteins
+	 * @return the entry protein
+	 *  
+	 */
+	public int getEntryProtein() {
+		return entryProtein;
+	}
+
+	/**
+	 * set the entry protein
+	 * @param entryProtein the entry protein
+	 * 
+	 */
+	public void setEntryProtein(int entryProtein) {
+		this.entryProtein = entryProtein;
 	}
 	
 	

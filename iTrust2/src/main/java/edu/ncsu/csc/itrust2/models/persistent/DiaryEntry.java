@@ -1,5 +1,7 @@
 package edu.ncsu.csc.itrust2.models.persistent;
 
+import edu.ncsu.csc.itrust2.forms.patient.DiaryEntryForm;
+
 /**
  * Diary Entry object. Only patients can create and edit diary entries,
  * HCP's can only view patient diary entries.
@@ -79,10 +81,23 @@ public class DiaryEntry {
 		this.protein = protein;
 	}
 
-//TODO: add a constructor that constructs a diary entry object form a diaryentryform
-//	public DiaryEntry(DiaryEntryForm form) {
-//		
-//	}
+	/**
+	 * Constructor to create a DiaryEntry from a DiaryEntryForm
+	 * @param form DiaryEntryForm object to create a DiaryEntry from
+	 */
+	public DiaryEntry(DiaryEntryForm form) {
+		this.date = form.getEntryDate();
+		this.meal = form.getEntryMeal();
+		this.name = form.getEntryName();
+		this.servings = form.getEntryServings();
+		this.calories = form.getEntryCalories();
+		this.fatGrams = form.getEntryFatGrams();
+		this.sodium = form.getEntrySodium();
+		this.carbs = form.getEntryCarbs();
+		this.sugars = form.getEntrySugars();
+		this.fibers = form.getEntryFibers();
+		this.protein = form.getEntryProtein();
+	}
 
 	/**
 	 * Gets date of diary entry.

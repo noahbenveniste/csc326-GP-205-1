@@ -17,6 +17,7 @@ import edu.ncsu.csc.itrust2.forms.personnel.LabProcedureForm;
 import edu.ncsu.csc.itrust2.models.enums.AppointmentType;
 import edu.ncsu.csc.itrust2.models.enums.HouseholdSmokingStatus;
 import edu.ncsu.csc.itrust2.models.enums.LabStatus;
+import edu.ncsu.csc.itrust2.models.enums.PatientSmokingStatus;
 import edu.ncsu.csc.itrust2.models.enums.Priority;
 import edu.ncsu.csc.itrust2.models.enums.Role;
 import edu.ncsu.csc.itrust2.models.persistent.BasicHealthMetrics;
@@ -154,10 +155,7 @@ public class LabProcedureTest {
         drug.setDescription( "Lithium Compounds" );
         drug.setName( "Li2O8" );
         drug.save();
-        
- 
-        
-        
+
         final Prescription pres = new Prescription();
         pres.setDosage( 3 );
         pres.setDrug( drug );
@@ -207,6 +205,15 @@ public class LabProcedureTest {
         visitForm.setNotes( "Test office visit" );
         visitForm.setType( AppointmentType.GENERAL_CHECKUP.toString() );
         visitForm.setHospital( "Dr. Jenkins' Insane Asylum" );
+        visitForm.setDiastolic( 80 );
+        visitForm.setSystolic( 120 );
+        visitForm.setHeight( 71f );
+        visitForm.setWeight( 150f );
+        visitForm.setHdl( 75 );
+        visitForm.setLdl( 75 );
+        visitForm.setTri( 300 );
+        visitForm.setHouseSmokingStatus( HouseholdSmokingStatus.NONSMOKING );
+        visitForm.setPatientSmokingStatus( PatientSmokingStatus.NEVER );
         final OfficeVisit visit = new OfficeVisit( visitForm );
         visit.save();
         final LabProcedureForm form = new LabProcedureForm();
@@ -307,6 +314,15 @@ public class LabProcedureTest {
         visitForm.setNotes( "Test office visit" );
         visitForm.setType( AppointmentType.GENERAL_CHECKUP.toString() );
         visitForm.setHospital( "Dr. Jenkins' Insane Asylum" );
+        visitForm.setDiastolic( 80 );
+        visitForm.setSystolic( 120 );
+        visitForm.setHeight( 71f );
+        visitForm.setWeight( 150f );
+        visitForm.setHdl( 75 );
+        visitForm.setLdl( 75 );
+        visitForm.setTri( 300 );
+        visitForm.setHouseSmokingStatus( HouseholdSmokingStatus.NONSMOKING );
+        visitForm.setPatientSmokingStatus( PatientSmokingStatus.NEVER );
         final OfficeVisit visit = new OfficeVisit( visitForm );
         visit.save();
         final LabProcedureForm form = new LabProcedureForm();

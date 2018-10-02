@@ -1,13 +1,13 @@
 package edu.ncsu.csc.itrust2.forms.patient;
 
-import java.text.SimpleDateFormat;
-import java.util.Locale;
+import java.util.Calendar;
 
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
 
-import org.hibernate.validator.constraints.NotEmpty;
 
+import edu.ncsu.csc.itrust2.models.enums.Meal;
 import edu.ncsu.csc.itrust2.models.persistent.DiaryEntry;
 /** 
  * This is the in-memory object that is used for saving a DiaryEntry form.
@@ -26,8 +26,7 @@ public class DiaryEntryForm {
 	 * The diary entry class is missing.
 	 */
 	public DiaryEntryForm( final DiaryEntry de) {
-		final SimpleDateFormat dateTemp = new SimpleDateFormat( "MM/dd/YYYY", Locale.ENGLISH );
-		setEntryDate( dateTemp.format( de.getDate()));
+		setEntryDate( de.getDate());
 		setEntryMeal( de.getMeal());
 		setEntryName( de.getName());
 		setEntryServings( de.getServings() );
@@ -40,10 +39,12 @@ public class DiaryEntryForm {
 		setEntryProtein( de.getProtein() );
 	}
 	/** the Entry date **/
-	private String entryDate;
+	private Calendar entryDate;
 	
-	/** the Entry meal **/
-	private String entryMeal;
+	/** type of meal: Breakfast, Lunch, Dinner. can have multiple. */
+    @NotNull
+    @Enumerated ( EnumType.STRING )
+    private Meal entryMeal;
 	
 	/** the Entry name **/
 	private String entryName;
@@ -84,7 +85,7 @@ public class DiaryEntryForm {
 	 * 
 	 * @return the entry date of the form
 	 */
-	public String getEntryDate() {
+	public Calendar getEntryDate() {
 		return entryDate;
 	}
 	
@@ -93,7 +94,7 @@ public class DiaryEntryForm {
 	 * 
 	 * @param entryDate the entry date of the form
 	 */
-	public void setEntryDate(String entryDate) {
+	public void setEntryDate(Calendar entryDate) {
 		this.entryDate = entryDate;
 	}
 	
@@ -102,17 +103,17 @@ public class DiaryEntryForm {
 	 * 
 	 * @return the entry meal of the form
 	 */
-	public String getEntryMeal() {
+	public Meal getEntryMeal() {
 		return entryMeal;
 	}
 	
 	/**
 	 * set the entry meal of the form
 	 * 
-	 * @param entryMeal the entry meal of the form
+	 * @param meal the entry meal of the form
 	 */
-	public void setEntryMeal(String entryMeal) {
-		this.entryMeal = entryMeal;
+	public void setEntryMeal(Meal meal) {
+		this.entryMeal = meal;
 	}
 	
 	/**

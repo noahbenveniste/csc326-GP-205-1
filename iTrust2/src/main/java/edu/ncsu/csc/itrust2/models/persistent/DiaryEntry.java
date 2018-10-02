@@ -1,6 +1,13 @@
 package edu.ncsu.csc.itrust2.models.persistent;
 
+import java.util.Calendar;
+
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.validation.constraints.NotNull;
+
 import edu.ncsu.csc.itrust2.forms.patient.DiaryEntryForm;
+import edu.ncsu.csc.itrust2.models.enums.Meal;
 
 /**
  * Diary Entry object. Only patients can create and edit diary entries,
@@ -10,10 +17,15 @@ import edu.ncsu.csc.itrust2.forms.patient.DiaryEntryForm;
  *
  */
 public class DiaryEntry {
-	/** date the entry was logged. mm/dd/yyyy */
-	private String date;
+	
+
 	/** type of meal: Breakfast, Lunch, Dinner. can have multiple. */
-	private String meal;
+    @NotNull
+    @Enumerated ( EnumType.STRING )
+    private Meal meal;
+
+	/** date the entry was logged. mm/dd/yyyy */
+    private Calendar date ;
 	/** name of the entry */
 	private String name;
 	/** number of servings */
@@ -37,8 +49,8 @@ public class DiaryEntry {
 	 * 0 for the fields.
 	 */
 	public DiaryEntry() {
-		this.date = "01/01/2001";
-		this.meal = "Breakfast";
+		this.date = Calendar.getInstance();;
+		this.meal = Meal.BREAKFAST;
 		this.name = "name";
 		this.servings = 0;
 		this.calories = 0;
@@ -68,8 +80,8 @@ public class DiaryEntry {
 	public DiaryEntry(String date, String meal, String name, int servings,
 			int calories, int fatGrams, int sodium, int carbs, int sugars,
 			int fibers, int protein) {
-		this.date = date;
-		this.meal = meal;
+		this.meal = Meal.BREAKFAST;
+		this.name = "name";
 		this.name = name;
 		this.servings = servings;
 		this.calories = calories;
@@ -103,7 +115,7 @@ public class DiaryEntry {
 	 * Gets date of diary entry.
 	 * @return date of entry
 	 */
-	public String getDate() {
+	public Calendar getDate() {
 		return this.date;
 	}
 
@@ -111,7 +123,7 @@ public class DiaryEntry {
 	 * Gets type of meal (breakfast/lunch/dinner)
 	 * @return type of meal
 	 */
-	public String getMeal() {
+	public Meal getMeal() {
 		return this.meal;
 	}
 
@@ -191,7 +203,7 @@ public class DiaryEntry {
 	 * Sets date of the entry
 	 * @param date date of entry
 	 */
-	public void setDate(String date) {
+	public void setDate(Calendar date) {
 		this.date = date;
 	}
 
@@ -199,7 +211,7 @@ public class DiaryEntry {
 	 * Sets the meal of entry
 	 * @param meal type of meal (breakfast, lunch, dinner)
 	 */
-	public void setMeal(String meal) {
+	public void setMeal(Meal meal) {
 		this.meal = meal;
 	}
 

@@ -181,6 +181,15 @@ public class OfficeVisitTest {
         visit.setNotes( "Test office visit" );
         visit.setType( AppointmentType.GENERAL_CHECKUP.toString() );
         visit.setHospital( "iTrust Test Hospital 2" );
+        visit.setDiastolic( 80 );
+        visit.setSystolic( 120 );
+        visit.setHeight( 71f );
+        visit.setWeight( 150f );
+        visit.setHdl( 75 );
+        visit.setLdl( 75 );
+        visit.setTri( 300 );
+        visit.setHouseSmokingStatus( HouseholdSmokingStatus.NONSMOKING );
+        visit.setPatientSmokingStatus( PatientSmokingStatus.NEVER );
         final LabProcedure proc = new LabProcedure();
         proc.setAssignedTech( User.getByRole( Role.ROLE_LABTECH ).get( 0 ) );
         proc.setComments( "Commment" );

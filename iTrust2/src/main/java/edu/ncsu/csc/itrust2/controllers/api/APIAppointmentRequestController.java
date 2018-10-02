@@ -32,7 +32,7 @@ import edu.ncsu.csc.itrust2.utils.LoggerUtil;
  * @author Kai Presler-Marshall
  *
  */
-@RestController
+@RestController 
 @SuppressWarnings ( { "unchecked", "rawtypes" } )
 public class APIAppointmentRequestController extends APIController {
 

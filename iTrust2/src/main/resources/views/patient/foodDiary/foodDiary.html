@@ -1,0 +1,328 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:include="layout :: head(title=~{::title},links=~{})">
+<title>My Food Diary</title>
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<script
+	src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
+</head>
+
+<body th:include="layout :: body" th:with="content=~{::content}">
+	<div th:fragment="content">
+		
+		<!-- javascript stuff -->
+		<script th:inline="javascript">
+		
+			var App = angular.module('diaryApp',[]);
+			
+			<!-- Controller that handles all business logic for webpage including updating displays and making API calls -->
+			angular.module('diaryApp').controller('diaryCtrl', function($scope, $http, $q) {
+				
+				var self = this;
+				
+				// Needed for adding a diary entry
+				self.diaryEntry = {date:'', mealType:'', name:'', servings:'', caloriesPerServing:'', fat:'', sodium:'', carbs:'', sugar:'', fiber:'', protein:''};
+				$scope.mealTypes = ['Breakfast', 'Lunch', 'Dinner', 'Snack'];
+				
+				// TODO: get patient name from entries for display
+				$scope.patientName = "Noah Benveniste";
+				
+				// The submit and reset functions that can be accessed in the html code
+				self.submit = submit;
+				self.reset = reset;
+				
+				// TODO: this will be a sorted list of diary entries (sorted by date) returned by a GET request.
+				self.diaryEntries = [];
+				
+				// This list will contain data objects containing diary entry data sorted by date with each cluster
+				// of entries per date punctuated by a data object containing nutrient totals for that date
+				self.outEntries = [];
+				
+				// Function that makes API call to print the table; mocked for now. TODO: add actual REST API endpoint
+				
+
+				/* 
+					The HCP html will look very similar to this code in general. The major difference
+					will be that instead of just performing a GET for the currently logged in patient,
+					the user, if authenticated as an HCP, will be able to perform a GET for a specific
+					patient. Otherwise, the controller logic should be identical. The only major
+					difference in the static webpage display will be that instead of displaying a form
+					for entering entry data 
+				*/
+				
+				// fills in diary with fake entries
+				for (var i = 0; i < 10; i++) {
+					self.diaryEntries.push({
+						date: "12/10/1996",
+						meal: "lunch",
+						name: "bagel",
+						servings: i % 3 + 1,
+						calories: i * 13 + 100,
+						fat: i * 4 + i % 2,
+						soduim: i + (i % 2) * 3,
+						carbs: i % 3 * 2,
+						sugar: i % 2 + 10 + i,
+						fiber: i + i % 3,
+						protein: i % 4 
+					});
+					
+				}
+				
+				async function addDiaryEntry() {
+					
+				}
+				
+				/* Function to loop over list of diary entries and calculate nutrient totals */
+				
+				// Function that handles a user's request to submit a diary entry
+				function submit() {
+					$scope.success = true;
+		    		$scope.failure = false;
+				}
+				
+				// Function that handles resetting the input forms
+				function reset() {
+					self.diaryEntry = {date:'', mealType:'', name:'', servings:'', caloriesPerServing:'', fat:'', sodium:'', carbs:'', sugar:'', fiber:'', protein:''};
+				    $scope.addRecipeForm.$setPristine(); //reset Form
+				}
+				
+			});
+		</script>
+		
+		<!-- TODO: input validation for creating a diary entry -->
+		<!-- Diary entry table -->
+		<div ng-app="diaryApp" ng-controller="diaryCtrl as ctrl">
+			<div class="container">
+				<div class="row">
+					<div class="col-md-12">
+						<div class="panel panel-primary">
+						
+							<!-- Diary entry header -->
+							<div class="panel-heading">
+								<h3>Food Diary for {{patientName}}</h3>
+							</div>
+							
+							<div class="panel-body">
+								<!-- TODO: make this table scrollable -->
+								<table class="table table-bordered" name="diary_table">
+									
+									<!-- Table column headers -->
+									<thead>
+										<tr>
+											<th>Date</th>
+											<th>Meal</th>
+											<th>Food Name</th>
+											<th>Servings</th>
+											<th>Calories (per serving)</th>
+											<th>Fat (g)</th>
+											<th>Sodium (mg)</th>
+											<th>Carbs (g)</th>
+											<th>Sugar (g)</th>
+											<th>Fiber (g)</th>
+											<th>Protein (g)</th>
+										</tr>
+									</thead>
+									
+									<!-- One diary entry per row, most recent entries at the top -->
+									<tbody>
+										<tr name="diaryTableRow" ng-repeat="e in ctrl.diaryEntries">
+											<td name="dateCell">{{e.date}}</td>
+											<td name="mealCell">{{e.meal}}</td>
+											<td name="nameCell">{{e.name}}</td>
+											<td name="servingsCell">{{e.servings}}</td>
+											<td name="caloriesCell">{{e.calories}}</td>
+											<td name="fatCell">{{e.fat}}</td>
+											<td name="sodiumCell">{{e.soduim}}</td>
+											<td name="carbsCell">{{e.carbs}}</td>
+											<td name="sugarCell">{{e.sugar}}</td>
+											<td name="fiberCell">{{e.fiber}}</td>
+											<td name="proteinCell">{{e.protein}}</td>
+										</tr>
+									</tbody>
+									
+								</table>
+							</div>					
+						</div>
+					</div>
+				</div>
+			</div>
+			
+			<div class="generic-container">
+				<div class="panel panel-default">
+				
+					<!-- Heading -->
+					<div class="panel-heading">
+						<span class="lead">Add an entry</span>
+					</div>
+					
+					<!-- Entry forms -->
+					<div class="formcontainer">
+						<form ng-submit="ctrl.submit()" name="addDiaryEntryForm" class="form-horizontal">
+						
+							<!-- Padding so date field isn't overlapping header -->
+							<div class="row">
+								<div class="form-group col-md-12">
+								</div>
+							</div>
+							
+							<!-- Form for entering date; TODO: proper form validation -->
+							<div class="row">
+								<div class="form-group col-md-12">
+									<label class="col-md-2 control-lable" for="file">Date</label>
+									<div class="col-md-7">
+										<input type="text" ng-model="ctrl.diaryEntry.date" name="date"
+											class="name form-control input-sm"
+											placeholder="Enter date (mm/dd/yy)" required="0" />
+									</div>
+								</div>
+							</div>
+							
+							<!-- Form for entering meal type; TODO: implement as a drop down menu -->
+							<div class="row">
+								<div class="form-group col-md-12">
+									<label class="col-md-2 control-lable" for="file">Select meal type</label>
+									<div class="col-md-7">
+										<select ng-model="ctrl.diaryEntry.mealType" name="mealType"
+											placeholder="Select meal type" required="0">
+   											<option ng-repeat="m in mealTypes">{{m}}</option>
+										</select>
+									</div>
+								</div>
+							</div>
+							
+							
+							<!-- Form for entering food name; TODO: proper form validation -->
+							<div class="row">
+								<div class="form-group col-md-12">
+									<label class="col-md-2 control-lable" for="file">Name of food</label>
+									<div class="col-md-7">
+										<input type="text" ng-model="ctrl.diaryEntry.name" name="name"
+											class="name form-control input-sm"
+											placeholder="Enter name of food" required="0" />
+									</div>
+								</div>
+							</div>
+							
+							<!-- Form for entering number of servings; TODO: proper form validation -->
+							<div class="row">
+								<div class="form-group col-md-12">
+									<label class="col-md-2 control-lable" for="file">Number of servings</label>
+									<div class="col-md-7">
+										<input type="text" ng-model="ctrl.diaryEntry.servings" name="servings"
+											class="name form-control input-sm"
+											placeholder="Enter number of servings" required="0" />
+									</div>
+								</div>
+							</div>
+							
+							<!-- Form for entering calories per serving; TODO: proper form validation -->
+							<div class="row">
+								<div class="form-group col-md-12">
+									<label class="col-md-2 control-lable" for="file">Calories per serving</label>
+									<div class="col-md-7">
+										<input type="text" ng-model="ctrl.diaryEntry.caloriesPerServing" name="caloriesPerServing"
+											class="name form-control input-sm"
+											placeholder="Enter calories per serving" required="0" />
+									</div>
+								</div>
+							</div>
+							
+							<!-- Form for entering fat per serving; TODO: proper form validation -->
+							<div class="row">
+								<div class="form-group col-md-12">
+									<label class="col-md-2 control-lable" for="file">Amount fat per serving (g)</label>
+									<div class="col-md-7">
+										<input type="text" ng-model="ctrl.diaryEntry.fat" name="fat"
+											class="name form-control input-sm"
+											placeholder="Enter fat per serving (g)" required="0" />
+									</div>
+								</div>
+							</div>
+							
+							<!-- Form for entering sodium per serving; TODO: proper form validation -->
+							<div class="row">
+								<div class="form-group col-md-12">
+									<label class="col-md-2 control-lable" for="file">Amount sodium per serving (mg)</label>
+									<div class="col-md-7">
+										<input type="text" ng-model="ctrl.diaryEntry.sodium" name="sodium"
+											class="name form-control input-sm"
+											placeholder="Enter sodium per serving (mg)" required="0" />
+									</div>
+								</div>
+							</div>
+							
+							<!-- Form for entering carbs per serving; TODO: proper form validation -->
+							<div class="row">
+								<div class="form-group col-md-12">
+									<label class="col-md-2 control-lable" for="file">Amount carbs per serving (g)</label>
+									<div class="col-md-7">
+										<input type="text" ng-model="ctrl.diaryEntry.carbs" name="carbs"
+											class="name form-control input-sm"
+											placeholder="Enter carbs per serving (mg)" required="0" />
+									</div>
+								</div>
+							</div>
+							
+							<!-- Form for entering sugar per serving; TODO: proper form validation -->
+							<div class="row">
+								<div class="form-group col-md-12">
+									<label class="col-md-2 control-lable" for="file">Amount sugar per serving (g)</label>
+									<div class="col-md-7">
+										<input type="text" ng-model="ctrl.diaryEntry.sugar" name="sugar"
+											class="name form-control input-sm"
+											placeholder="Enter sugar per serving (mg)" required="0" />
+									</div>
+								</div>
+							</div>
+							
+							<!-- Form for entering fiber per serving; TODO: proper form validation -->
+							<div class="row">
+								<div class="form-group col-md-12">
+									<label class="col-md-2 control-lable" for="file">Amount fiber per serving (g)</label>
+									<div class="col-md-7">
+										<input type="text" ng-model="ctrl.diaryEntry.fiber" name="fiber"
+											class="name form-control input-sm"
+											placeholder="Enter fiber per serving (mg)" required="0" />
+									</div>
+								</div>
+							</div>
+							
+							<!-- Form for entering protein per serving; TODO: proper form validation -->
+							<div class="row">
+								<div class="form-group col-md-12">
+									<label class="col-md-2 control-lable" for="file">Amount protein per serving (g)</label>
+									<div class="col-md-7">
+										<input type="text" ng-model="ctrl.diaryEntry.protein" name="protein"
+											class="name form-control input-sm"
+											placeholder="Enter protein per serving (mg)" required="0" />
+									</div>
+								</div>
+							</div>
+							
+							<div class="row">
+								<div class="form-actions col-md-12">
+									<input type="submit" value="Submit"
+										class="btn btn-primary btn-sm"
+										ng-disabled="addDiaryEntryForm.$invalid" />
+									<button type="button" ng-click="ctrl.reset()"
+										class="btn btn-warning btn-sm"
+										ng-disabled="addDiaryEntryForm.$pristine">Reset Form</button>
+								</div>
+							</div>
+							
+						</form>
+					</div>
+					
+					<div ng-show="success">Diary Entry Added</div>
+					<div ng-show="failure">Error while adding diary entry.</div>
+					
+				</div>
+			</div>
+		</div>
+		
+		<!-- Navigate back to patient landing page -->
+		<a href="/index">Patient Home Page</a>
+		
+	</div>
+</body>
+</html>

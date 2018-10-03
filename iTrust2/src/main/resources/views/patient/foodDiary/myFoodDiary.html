@@ -5,88 +5,122 @@
 	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 <script
 	src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
+
 </head>
 
 <body th:include="layout :: body" th:with="content=~{::content}">
 	<div th:fragment="content">
 		
+		<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.6.5/angular-mocks.js"></script>
+		
 		<!-- javascript stuff -->
 		<script th:inline="javascript">
 		
-			var App = angular.module('diaryApp',[]);
+			var app = angular.module('diaryApp',['ngMockE2E']);
 			
-			<!-- Controller that handles all business logic for webpage including updating displays and making API calls -->
-			angular.module('diaryApp').controller('diaryCtrl', function($scope, $http, $q) {
+			angular.module('diaryApp').factory('diaryService', ['$http', '$q', '$httpBackend', function( $http, $q, $httpBackend) {
 				
-				var self = this;
+				var REST_SERVICE_URI = '/iTrust2/api/v1/diaryentries';
 				
-				// Needed for adding a diary entry
-				self.diaryEntry = {date:'', mealType:'', name:'', servings:'', caloriesPerServing:'', fat:'', sodium:'', carbs:'', sugar:'', fiber:'', protein:''};
-				$scope.mealTypes = ['Breakfast', 'Lunch', 'Dinner', 'Snack'];
+				// Initializes data for mock GET request
+				self.mockDiaryEntries = [];
 				
-				// TODO: get patient name from entries for display
-				$scope.patientName = "Noah Benveniste";
-				
-				// The submit and reset functions that can be accessed in the html code
-				self.submit = submit;
-				self.reset = reset;
-				
-				// TODO: this will be a sorted list of diary entries (sorted by date) returned by a GET request.
-				self.diaryEntries = [];
-				
-				// This list will contain data objects containing diary entry data sorted by date with each cluster
-				// of entries per date punctuated by a data object containing nutrient totals for that date
-				self.outEntries = [];
-				
-				// Function that makes API call to print the table; mocked for now. TODO: add actual REST API endpoint
-				
-
-				/* 
-					The HCP html will look very similar to this code in general. The major difference
-					will be that instead of just performing a GET for the currently logged in patient,
-					the user, if authenticated as an HCP, will be able to perform a GET for a specific
-					patient. Otherwise, the controller logic should be identical. The only major
-					difference in the static webpage display will be that instead of displaying a form
-					for entering entry data 
-				*/
-				
-				// fills in diary with fake entries
 				for (var i = 0; i < 10; i++) {
-					self.diaryEntries.push({
-						date: "12/10/1996",
-						meal: "lunch",
+					self.mockDiaryEntries.push({
+						patientName: "Noah Benveniste",
+						date: "10/3/2018",
+						mealType: "Lunch",
 						name: "bagel",
 						servings: i % 3 + 1,
-						calories: i * 13 + 100,
+						caloriesPerServing: i * 13 + 100,
 						fat: i * 4 + i % 2,
-						soduim: i + (i % 2) * 3,
+						sodium: i + (i % 2) * 3,
 						carbs: i % 3 * 2,
 						sugar: i % 2 + 10 + i,
 						fiber: i + i % 3,
-						protein: i % 4 
+						protein: i % 4
 					});
-					
 				}
 				
-				async function addDiaryEntry() {
-					
+				// Mock interception of REST api calls. Comment this section out to use real API
+				$httpBackend.whenRoute('GET', '/iTrust2/api/v1/diaryentries')
+				   .respond(function(method, url, data, headers, params) {
+				   return [200, self.mockDiaryEntries];
+				});
+				// end mock interception
+				
+				// Services
+				var factory = {
+					getEntriesService: getEntriesService
+				};
+				
+				return factory;
+				
+				function getEntriesService() {
+					var deferred = $q.defer();
+					$http.get(REST_SERVICE_URI)
+						.then(
+						function(response) {
+							deferred.resolve(response.data);
+						},
+						function(errResponse) {
+							console.error('Error while getting diary entries (getEntriesService)')
+							deferred.reject(errResponse);
+						}
+					);
+					return deferred.promise;
+				}
+
+			}]);
+			
+			angular.module('diaryApp').controller('diaryCtrl', ['$scope', 'diaryService', function( $scope, diaryService ) {
+				var self = this;
+				
+				// TODO: update this data format based on the JSON format of the DiaryEntry.java class when it's finished
+				self.diaryEntry = {patientName:'', date:'', mealType:'', name:'', servings:'', caloriesPerServing:'', fat:'', sodium:'', carbs:'', sugar:'', fiber:'', protein:''};
+				self.diaryEntryMaster = [];
+				
+				$scope.mealTypes = ['Breakfast', 'Lunch', 'Dinner', 'Snack'];
+				$scope.patientName = '';
+				
+				self.submit = submit;
+				self.reset = reset;
+				
+				getEntries();
+				
+				// Calculate nutrient totals
+				
+				function getEntries() {
+					diaryService.getEntriesService()
+						.then(
+						function(data) {
+							
+							// Update the master list of diary entries
+							self.diaryEntryMaster = data;
+							
+							// Get the user's name
+							$scope.patientName = self.diaryEntryMaster[0].patientName;
+						},
+						function(errResponse) {
+							console.error('Error while getting diary entries (getEntries)');
+						}
+					);
 				}
 				
-				/* Function to loop over list of diary entries and calculate nutrient totals */
-				
-				// Function that handles a user's request to submit a diary entry
 				function submit() {
 					$scope.success = true;
-		    		$scope.failure = false;
+					$scope.failure = false;
+					console.log('Diary entry added');
+					reset();
 				}
 				
-				// Function that handles resetting the input forms
 				function reset() {
-					self.diaryEntry = {date:'', mealType:'', name:'', servings:'', caloriesPerServing:'', fat:'', sodium:'', carbs:'', sugar:'', fiber:'', protein:''};
-				    $scope.addRecipeForm.$setPristine(); //reset Form
+					self.diaryEntry = {patientName:'', date:'', mealType:'', name:'', servings:'', caloriesPerServing:'', fat:'', sodium:'', carbs:'', sugar:'', fiber:'', protein:''};
+				    $scope.addDiaryEntryForm.$setPristine(); //reset Form
 				}
 				
-			});
+			}]);
+			
 		</script>
 		
 		<!-- TODO: input validation for creating a diary entry -->
@@ -125,14 +159,14 @@
 									
 									<!-- One diary entry per row, most recent entries at the top -->
 									<tbody>
-										<tr name="diaryTableRow" ng-repeat="e in ctrl.diaryEntries">
+										<tr name="diaryTableRow" ng-repeat="e in ctrl.diaryEntryMaster">
 											<td name="dateCell">{{e.date}}</td>
-											<td name="mealCell">{{e.meal}}</td>
+											<td name="mealCell">{{e.mealType}}</td>
 											<td name="nameCell">{{e.name}}</td>
 											<td name="servingsCell">{{e.servings}}</td>
-											<td name="caloriesCell">{{e.calories}}</td>
+											<td name="caloriesCell">{{e.caloriesPerServing}}</td>
 											<td name="fatCell">{{e.fat}}</td>
-											<td name="sodiumCell">{{e.soduim}}</td>
+											<td name="sodiumCell">{{e.sodium}}</td>
 											<td name="carbsCell">{{e.carbs}}</td>
 											<td name="sugarCell">{{e.sugar}}</td>
 											<td name="fiberCell">{{e.fiber}}</td>
@@ -172,7 +206,7 @@
 									<div class="col-md-7">
 										<input type="text" ng-model="ctrl.diaryEntry.date" name="date"
 											class="name form-control input-sm"
-											placeholder="Enter date (mm/dd/yy)" required="0" />
+											placeholder="Enter date (mm/dd/yyyy)" required="0" />
 									</div>
 								</div>
 							</div>

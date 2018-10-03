@@ -37,7 +37,18 @@ public class DiaryEntryForm {
 		setEntrySugars( de.getSugars() );
 		setEntryFibers( de.getFibers() );
 		setEntryProtein( de.getProtein() );
+        setEntryPatient( de.getPatient().getUsername() );
+        if ( null != de.getId() ) {
+            setId( de.getId().toString() );
+        }
 	}
+	
+    /** The id of the diary entry form */
+    private String id;
+    
+    /** The patient of the entry form */
+    private String patient;
+    
 	/** the Entry date **/
 	private Calendar entryDate;
 	
@@ -72,7 +83,43 @@ public class DiaryEntryForm {
 	
 	/** the entry Protein **/
 	private int entryProtein;
-	
+
+    /**
+     * Get the id of the appointment request
+     *
+     * @return the id of the appointment request
+     */
+    public String getId () {
+        return id;
+    }
+
+    /**
+     * Set the id of the appointment to request
+     *
+     * @param id
+     *            the id of the appointment to request
+     */
+    public void setId ( final String id ) {
+        this.id = id;
+    }
+    /**
+     * Get the patient of the form
+     *
+     * @return the patient of the form
+     */
+    public String getEntryPatient () {
+        return patient;
+    }
+
+    /**
+     * Set the patient of the form
+     *
+     * @param patient
+     *            the patient of the form
+     */
+    public void setEntryPatient ( final String patient ) {
+        this.patient = patient;
+    }
 	/**
 	 * Don't use this one. For Hibernate/Thymelaef
 	 */

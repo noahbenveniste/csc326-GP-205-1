@@ -1,24 +1,88 @@
 package edu.ncsu.csc.itrust2.models.persistent;
 
 import java.util.Calendar;
+import java.util.List;
 
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotNull;
+
+import org.hibernate.criterion.Criterion;
 
 import edu.ncsu.csc.itrust2.forms.patient.DiaryEntryForm;
 import edu.ncsu.csc.itrust2.models.enums.Meal;
+import edu.ncsu.csc.itrust2.models.enums.Role;
 
 /**
  * Diary Entry object. Only patients can create and edit diary entries,
  * HCP's can only view patient diary entries.
  * 
  * @author Jonathan Oh
+ *         modify by shuzheng Wang in 10/3
  *
  */
-public class DiaryEntry {
-	
+public class DiaryEntry extends DomainObject<DiaryEntry> {
 
+    /**
+     * Retrieve a List of all foodDiaryEntries from the database. Can be
+     * filtered further once retrieved. Will return the foodDiaryEntries
+     * sorted by date.
+     *
+     * @return A List of all foodDiaryEntries saved in the database
+     */
+    @SuppressWarnings ( "unchecked" )
+    public static List<DiaryEntry> getFoodDiaryEntries() {
+        final List<DiaryEntry> entries = (List<DiaryEntry>) getAll( DiaryEntry.class );
+        entries.sort( (x1, x2) -> x1.getDate().compareTo(x2.getDate()));
+        return entries;
+    }
+
+    /**
+     * Retrieves all food diary entries for the Patient provided.
+     *
+     * @param patientName
+     *            Name of the patient
+     * @return All of their food diary entries
+     */
+    public static List<DiaryEntry> getFoodDiaryEntriesForPatient ( final String patientName ) {
+        return getWhere( eqList( "patient", User.getByNameAndRole( patientName, Role.ROLE_PATIENT ) ) );
+    }
+    
+    /**
+     * Retrieve an diary entry by its numerical ID.
+     *
+     * @param id
+     *            The ID (as assigned by the DB) of the diary entry
+     * @return The diary entry, if found, or null if not found.
+     */
+    public static DiaryEntry getById ( final Long id ) {
+        try {
+            return getWhere( eqList( ID, id ) ).get( 0 );
+        }
+        catch ( final Exception e ) {
+            return null;
+        }
+    }
+    
+    /**
+     * Retrieve a List of food diary entries that meets the given where
+     * clause. Clause is expected to be valid SQL.
+     *
+     * @param where
+     *            List of Criterion to and together and search for records by
+     * @return The matching list
+     */
+    @SuppressWarnings ( "unchecked" )
+    private static List<DiaryEntry> getWhere ( final List<Criterion> where ) {
+        return (List<DiaryEntry>) getWhere( DiaryEntry.class, where );
+    }
+    
+   
 	/** type of meal: Breakfast, Lunch, Dinner. can have multiple. */
     @NotNull
     @Enumerated ( EnumType.STRING )
@@ -111,6 +175,33 @@ public class DiaryEntry {
 		this.protein = form.getEntryProtein();
 	}
 
+    /**
+     * The Patient who is associated with this entry form
+     */
+    @NotNull
+    @ManyToOne
+    @JoinColumn ( name = "patient_id", columnDefinition = "varchar(100)" )
+    private User            patient;
+    
+    /**
+     * Retrieves the User object for the Patient for the diary entry form
+     *
+     * @return The associated Patient
+     */
+    public User getPatient () {
+        return patient;
+    }
+
+    /**
+     * Sets the Patient for the diary entry form
+     *
+     * @param patient
+     *            The User object for the Patient on the entry
+     */
+    public void setPatient ( final User patient ) {
+        this.patient = patient;
+    }
+    
 	/**
 	 * Gets date of diary entry.
 	 * @return date of entry
@@ -285,5 +376,27 @@ public class DiaryEntry {
 	 */
 	public void setProtein(int protein) {
 		this.protein = protein;
+	}
+
+    /**
+     * ID of the Diary entry form
+     */
+    @Id
+    @GeneratedValue ( strategy = GenerationType.AUTO )
+    private Long id;
+
+    /**
+     * Sets the ID of the entry form
+     *
+     * @param id
+     *            The new ID of the entry form. For Hibernate.
+     */
+    public void setId ( final Long id ) {
+        this.id = id;
+    }
+	@Override
+	public Long getId() {
+		// TODO Auto-generated method stub
+		return id;
 	}
 }

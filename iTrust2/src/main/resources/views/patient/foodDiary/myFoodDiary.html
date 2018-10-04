@@ -5,7 +5,7 @@
 	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
 </head>
 <body th:include="layout :: body" th:with="content=~{::content}">
-	<div th:fragment="content">
+	<div th:fragment="content" class="container" ng-app="diaryApp" ng-controller="diaryCtrl as ctrl">
 		
 		<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.6.5/angular-mocks.js"></script>
 		
@@ -162,163 +162,161 @@
 			
 		</script>
 		
+		<h1>My Food Diary</h1>
+		<div th:include="diaryTable :: diaryTable"></div>
 		<!-- TODO: input validation for creating a diary entry -->
-		<!-- Diary entry table -->
-		<div ng-app="diaryApp" ng-controller="diaryCtrl as ctrl">
-			<div th:include="diaryTable :: diaryTable"></div>
-			
-			<div class="generic-container">
-				<div class="panel panel-default">
-				
-					<!-- Heading -->
-					<div class="panel-heading">
-						<span class="lead">Add an entry</span>
-					</div>
-					
-					<!-- Entry forms -->
+		<!-- Form for new food diary -->
+		<div class="generic-container">
+			<div class="panel panel-default">
+	
+				<!-- Heading -->
+				<div class="panel-heading">
+					<span class="lead">Add an entry</span>
+				</div>
+	
+				<!-- Entry forms -->
+				<div class="panel-body">
 					<div class="formcontainer">
-						<form ng-submit="ctrl.submit()" name="addDiaryEntryForm" class="form-horizontal">
-						
+						<form ng-submit="ctrl.submitDiaryEntry()" name="addDiaryEntryForm" class="form-horizontal">
+	
 							<!-- Padding so date field isn't overlapping header -->
 							<div class="row">
-								<div class="form-group col-md-12">
-								</div>
+								<div class="form-group col-md-12"></div>
 							</div>
-							
+	
 							<!-- Form for entering date; TODO: proper form validation -->
 							<div class="row">
-								<div class="form-group col-md-12">
-									<label class="col-md-2 control-lable" for="file">Date</label>
-									<div class="col-md-7">
-										<input type="text" ng-model="ctrl.diaryEntry.date" name="date"
-											class="name form-control input-sm"
-											placeholder="Enter date (mm/dd/yyyy)" required="0" />
-									</div>
+								<div class="col-sm-2 col-xs-4 control-lable" for="file">
+									<label>Date</label>
 								</div>
-							</div>
-							
-							<!-- Form for entering meal type; TODO: implement as a drop down menu -->
+								<div class="col-sm-3 col-xs-8">
+									<input type="text" ng-model="ctrl.diaryEntry.date" name="date"
+										class="name form-control input-sm"
+										placeholder="Enter date (mm/dd/yyyy)" required="0" />
+								</div>
+							</div><br/>
 							<div class="row">
-								<div class="form-group col-md-12">
-									<label class="col-md-2 control-lable" for="file">Select meal type</label>
-									<div class="col-md-7">
-										<select ng-model="ctrl.diaryEntry.mealType" name="mealType"
-											placeholder="Select meal type" required="0">
-   											<option ng-repeat="m in mealTypes">{{m}}</option>
-										</select>
-									</div>
+								<div class="col-sm-3 col-xs-2 control-lable" for="file">
+									<label>Select meal type</label>
 								</div>
-							</div>
-							
-							
-							<!-- Form for entering food name; TODO: proper form validation -->
+								<div class="col-xs-3 col-xs-10">
+									<select ng-model="ctrl.diaryEntry.mealType" name="mealType"
+										placeholder="Select meal type" required="0">
+										<option ng-repeat="m in mealTypes">{{m}}</option>
+									</select>
+								</div>
+							</div><br/>
 							<div class="row">
-								<div class="form-group col-md-12">
-									<label class="col-md-2 control-lable" for="file">Name of food</label>
-									<div class="col-md-7">
-										<input type="text" ng-model="ctrl.diaryEntry.name" name="name"
-											class="name form-control input-sm"
-											placeholder="Enter name of food" required="0" />
-									</div>
+								<div class="col-sm-2 col-xs-3 control-lable" for="file">
+									<label>Name of food</label>
+								</div>
+								<div class="col-sm-4 col-xs-9">
+									<input type="text" ng-model="ctrl.diaryEntry.name" name="name"
+										class="name form-control input-sm"
+										placeholder="Enter name of food" required="0" />
 								</div>
 							</div>
-							
-							<!-- Form for entering number of servings; TODO: proper form validation -->
+							<div class="row"><hr/></div>
 							<div class="row">
-								<div class="form-group col-md-12">
-									<label class="col-md-2 control-lable" for="file">Number of servings</label>
-									<div class="col-md-7">
-										<input type="text" ng-model="ctrl.diaryEntry.servings" name="servings"
-											class="name form-control input-sm"
-											placeholder="Enter number of servings" required="0" />
+								<div class="col-md-3 col-sm-6 col-xs-12">
+									<div class="row">
+										<div class="col-xs-4">
+											<input type="text" ng-model="ctrl.diaryEntry.servings"
+												name="servings" class="name form-control input-sm"
+												placeholder="Enter number of servings" required="0" />
+										</div>
+										<div class="col-xs-8 control-lable" for="file">
+											<label>Number of Servings</label>
+										</div>
+									</div>
+								</div>
+								<div class="col-md-3 col-sm-6 col-xs-12">
+									<div class="row">
+										<div class="col-xs-4">
+											<input type="text"
+												ng-model="ctrl.diaryEntry.caloriesPerServing"
+												name="caloriesPerServing" class="name form-control input-sm"
+												placeholder="Enter calories per serving" required="0" />
+										</div>
+										<div class="col-xs-8 control-lable" for="file">
+											<label>Calories per serving</label>
+										</div>
+									</div>
+								</div>
+								<div class="col-md-3 col-sm-6 col-xs-12">
+									<div class="row">
+										<div class="col-xs-4">
+											<input type="text" ng-model="ctrl.diaryEntry.fat" name="fat"
+												class="name form-control input-sm"
+												placeholder="Enter fat per serving (g)" required="0" />
+										</div>
+										<div class="col-xs-8 control-lable" for="file">
+											<label>Amount of fat per serving (g)</label>
+										</div>
+									</div>
+								</div>
+								<div class="col-md-3 col-sm-6 col-xs-12">
+									<div class="row">
+										<div class="col-xs-4">
+											<input type="text" ng-model="ctrl.diaryEntry.sodium"
+												name="sodium" class="name form-control input-sm"
+												placeholder="Enter sodium per serving (mg)" required="0" />
+										</div>
+										<div class="col-xs-8 control-lable" for="file">
+											<label>Amount of sodium per serving</label>
+										</div>
+									</div>
+								</div>
+								<div class="col-md-3 col-sm-6 col-xs-12">
+									<div class="row">
+										<div class="col-xs-4">
+											<input type="text" ng-model="ctrl.diaryEntry.carbs"
+												name="carbs" class="name form-control input-sm"
+												placeholder="Enter carbs per serving (mg)" required="0" />
+										</div>
+										<div class="col-xs-8 control-lable" for="file">
+											<label>Amount of carbs per serving (g)</label>
+										</div>
+									</div>
+								</div>
+								<div class="col-md-3 col-sm-6 col-xs-12">
+									<div class="row">
+										<div class="col-xs-4">
+											<input type="text" ng-model="ctrl.diaryEntry.sugar"
+												name="sugar" class="name form-control input-sm"
+												placeholder="Enter sugar per serving (mg)" required="0" />
+										</div>
+										<div class="col-xs-8 control-lable" for="file">
+											<label>Amount of sugar per serving (g)</label>
+										</div>
+									</div>
+								</div>
+								<div class="col-md-3 col-sm-6 col-xs-12">
+									<div class="row">
+										<div class="col-xs-4">
+											<input type="text" ng-model="ctrl.diaryEntry.fiber"
+												name="fiber" class="name form-control input-sm"
+												placeholder="Enter fiber per serving (mg)" required="0" />
+										</div>
+										<div class="col-xs-8 control-lable" for="file">
+											<label>Amount of fiber per serving (g)</label>
+										</div>
+									</div>
+								</div>
+								<div class="col-md-3 col-sm-6 col-xs-12">
+									<div class="row">
+										<div class="col-xs-4">
+											<input type="text" ng-model="ctrl.diaryEntry.protein"
+												name="protein" class="name form-control input-sm"
+												placeholder="Enter protein per serving (mg)" required="0" />
+										</div>
+										<div class="col-xs-8 control-lable" for="file">
+											<label>Amount of protien per serving (g)</label>
+										</div>
 									</div>
 								</div>
 							</div>
-							
-							<!-- Form for entering calories per serving; TODO: proper form validation -->
-							<div class="row">
-								<div class="form-group col-md-12">
-									<label class="col-md-2 control-lable" for="file">Calories per serving</label>
-									<div class="col-md-7">
-										<input type="text" ng-model="ctrl.diaryEntry.caloriesPerServing" name="caloriesPerServing"
-											class="name form-control input-sm"
-											placeholder="Enter calories per serving" required="0" />
-									</div>
-								</div>
-							</div>
-							
-							<!-- Form for entering fat per serving; TODO: proper form validation -->
-							<div class="row">
-								<div class="form-group col-md-12">
-									<label class="col-md-2 control-lable" for="file">Amount fat per serving (g)</label>
-									<div class="col-md-7">
-										<input type="text" ng-model="ctrl.diaryEntry.fat" name="fat"
-											class="name form-control input-sm"
-											placeholder="Enter fat per serving (g)" required="0" />
-									</div>
-								</div>
-							</div>
-							
-							<!-- Form for entering sodium per serving; TODO: proper form validation -->
-							<div class="row">
-								<div class="form-group col-md-12">
-									<label class="col-md-2 control-lable" for="file">Amount sodium per serving (mg)</label>
-									<div class="col-md-7">
-										<input type="text" ng-model="ctrl.diaryEntry.sodium" name="sodium"
-											class="name form-control input-sm"
-											placeholder="Enter sodium per serving (mg)" required="0" />
-									</div>
-								</div>
-							</div>
-							
-							<!-- Form for entering carbs per serving; TODO: proper form validation -->
-							<div class="row">
-								<div class="form-group col-md-12">
-									<label class="col-md-2 control-lable" for="file">Amount carbs per serving (g)</label>
-									<div class="col-md-7">
-										<input type="text" ng-model="ctrl.diaryEntry.carbs" name="carbs"
-											class="name form-control input-sm"
-											placeholder="Enter carbs per serving (mg)" required="0" />
-									</div>
-								</div>
-							</div>
-							
-							<!-- Form for entering sugar per serving; TODO: proper form validation -->
-							<div class="row">
-								<div class="form-group col-md-12">
-									<label class="col-md-2 control-lable" for="file">Amount sugar per serving (g)</label>
-									<div class="col-md-7">
-										<input type="text" ng-model="ctrl.diaryEntry.sugar" name="sugar"
-											class="name form-control input-sm"
-											placeholder="Enter sugar per serving (mg)" required="0" />
-									</div>
-								</div>
-							</div>
-							
-							<!-- Form for entering fiber per serving; TODO: proper form validation -->
-							<div class="row">
-								<div class="form-group col-md-12">
-									<label class="col-md-2 control-lable" for="file">Amount fiber per serving (g)</label>
-									<div class="col-md-7">
-										<input type="text" ng-model="ctrl.diaryEntry.fiber" name="fiber"
-											class="name form-control input-sm"
-											placeholder="Enter fiber per serving (mg)" required="0" />
-									</div>
-								</div>
-							</div>
-							
-							<!-- Form for entering protein per serving; TODO: proper form validation -->
-							<div class="row">
-								<div class="form-group col-md-12">
-									<label class="col-md-2 control-lable" for="file">Amount protein per serving (g)</label>
-									<div class="col-md-7">
-										<input type="text" ng-model="ctrl.diaryEntry.protein" name="protein"
-											class="name form-control input-sm"
-											placeholder="Enter protein per serving (mg)" required="0" />
-									</div>
-								</div>
-							</div>
-							
+							<div class="row"><hr/></div>
 							<div class="row">
 								<div class="form-actions col-md-12">
 									<input type="submit" value="Submit"
@@ -329,13 +327,11 @@
 										ng-disabled="addDiaryEntryForm.$pristine">Reset Form</button>
 								</div>
 							</div>
-							
 						</form>
 					</div>
-					
+	
 					<div ng-show="success">Diary Entry Added</div>
 					<div ng-show="failure">Error while adding diary entry.</div>
-					
 				</div>
 			</div>
 		</div>

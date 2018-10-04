@@ -21,7 +21,7 @@ import edu.ncsu.csc.itrust2.utils.LoggerUtil;
  */
 @RestController 
 @SuppressWarnings ( { "unchecked", "rawtypes" } )
-public class APIFoodDiaryController extends APIController{
+public class APIFoodDiaryController extends APIController {
 
     /**
      * Retrieves a list of all food diary entries in the database
@@ -44,15 +44,15 @@ public class APIFoodDiaryController extends APIController{
         		.collect( Collectors.toList() );
     }
 
-    /**
-     * Retrieves the DiaryEntries for a HCP wanting to access a patient's DiaryEntries
-     * @param patientName name of the patient to get the Diary Entries of
-     * @return list of DiaryEntries for the patient with the given name
-     */
-    @GetMapping ( BASE_PATH + "/diaryentries/{name}" )
-    public List<DiaryEntry> getFoodDiaryEntriesForHCP(@PathVariable final String patientName) {
-    	return DiaryEntry.getFoodDiaryEntriesForPatient(patientName);
-    }
-    
+//    /**
+//     * Retrieves the DiaryEntries for a HCP wanting to access a patient's DiaryEntries
+//     * @param patientName name of the patient to get the Diary Entries of
+//     * @return list of DiaryEntries for the patient with the given name
+//     */
+//    @GetMapping ( BASE_PATH + "/diaryentries/{name}" )
+//    public List<DiaryEntry> getFoodDiaryEntriesForHCP(@PathVariable final String patientName) {
+//    	return DiaryEntry.getFoodDiaryEntriesForPatient(patientName);
+//    }
+//    
 
 }

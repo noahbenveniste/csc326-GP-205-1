@@ -47,11 +47,22 @@
 				   .respond(function(method, url, data, headers, params) {
 				   return [200, self.mockDiaryEntries];
 				});
+				
+				$httpBackend.whenRoute('PUT', REST_SERVICE_URI)
+					.respond(function(method, url, data, headers, params) {
+					let obj = JSON.parse(data);
+				    self.mockDiaryEntries.push(obj);
+				    
+				    // Code to sort the list (Note: this should occur on the backend, this is just for mocking purposes)
+				    
+				    return [201, mockDiaryEntries];
+				});
 				// end mock interception
 				
 				// Services
 				var factory = {
-					getEntriesService: getEntriesService
+					getEntriesService: getEntriesService,
+					addEntryService: addEntryService
 				};
 				
 				return factory;
@@ -65,6 +76,21 @@
 						},
 						function(errResponse) {
 							console.error('Error while getting diary entries (getEntriesService)')
+							deferred.reject(errResponse);
+						}
+					);
+					return deferred.promise;
+				}
+				
+				function addEntryService(entry) {
+					var deferred = $q.defer();
+					$http.put(REST_SERVICE_URI, entry)
+						.then(
+						function(response) {
+							deferred.resolve(response.data);
+						},
+						function(errResponse) {
+							console.error('Error while adding diary entry')
 							deferred.reject(errResponse);
 						}
 					);
@@ -107,9 +133,26 @@
 					);
 				}
 				
-				function submit() {
-					$scope.success = true;
+				function addEntry(entry) {
+					
+					$scope.success = false;
 					$scope.failure = false;
+					
+					diaryService.addEntryService(entry)
+						.then(getEntries,
+						function(errResponse) {
+							$scope.failure = true;
+							$scope.success = false;
+							console.error('Error while adding diary entry');
+						}
+					);
+					
+					$scope.success = !($scope.failure);
+					
+				}
+				
+				function submit() {
+					addEntry(self.diaryEntry);
 					console.log('Diary entry added');
 					reset();
 				}

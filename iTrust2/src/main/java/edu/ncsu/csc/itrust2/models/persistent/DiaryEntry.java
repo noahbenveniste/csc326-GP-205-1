@@ -49,7 +49,7 @@ public class DiaryEntry extends DomainObject<DiaryEntry> {
      *            Name of the patient
      * @return All of their food diary entries
      */
-    public static List<DiaryEntry> getFoodDiaryEntriesForPatient ( final String patientName ) {
+    public static List<DiaryEntry> getDiaryEntriesByName ( final String patientName ) {
         return getWhere( eqList( "patient", User.getByNameAndRole( patientName, Role.ROLE_PATIENT ) ) );
     }
     

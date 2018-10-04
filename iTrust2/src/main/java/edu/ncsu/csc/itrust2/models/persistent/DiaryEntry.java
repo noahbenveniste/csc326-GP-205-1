@@ -113,7 +113,7 @@ public class DiaryEntry extends DomainObject<DiaryEntry> {
 	 * 0 for the fields.
 	 */
 	public DiaryEntry() {
-		this.date = Calendar.getInstance();;
+		this.date = Calendar.getInstance();
 		this.meal = Meal.BREAKFAST;
 		this.name = "name";
 		this.servings = 0;
@@ -141,10 +141,11 @@ public class DiaryEntry extends DomainObject<DiaryEntry> {
 	 * @param fibers grams of fibers/serving
 	 * @param protein grams of protein/serving
 	 */
-	public DiaryEntry(String date, String meal, String name, int servings,
+	public DiaryEntry(Calendar date, Meal meal, String name, int servings,
 			int calories, int fatGrams, int sodium, int carbs, int sugars,
 			int fibers, int protein) {
-		this.meal = Meal.BREAKFAST;
+		this.date = date;
+		this.meal = meal;
 		this.name = "name";
 		this.name = name;
 		this.servings = servings;
@@ -396,7 +397,6 @@ public class DiaryEntry extends DomainObject<DiaryEntry> {
     }
 	@Override
 	public Long getId() {
-		// TODO Auto-generated method stub
 		return id;
 	}
 }

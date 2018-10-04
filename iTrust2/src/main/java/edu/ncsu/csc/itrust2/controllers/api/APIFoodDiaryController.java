@@ -40,19 +40,19 @@ public class APIFoodDiaryController extends APIController {
      */
     @GetMapping ( BASE_PATH + "/diaryentries" )
     public List<DiaryEntry> getFoodDiaryEntriesForPatient () {
-        return DiaryEntry.getFoodDiaryEntriesForPatient( LoggerUtil.currentUser() ).stream()
+        return DiaryEntry.getDiaryEntriesByName( LoggerUtil.currentUser() ).stream()
         		.collect( Collectors.toList() );
     }
 
-//    /**
-//     * Retrieves the DiaryEntries for a HCP wanting to access a patient's DiaryEntries
-//     * @param patientName name of the patient to get the Diary Entries of
-//     * @return list of DiaryEntries for the patient with the given name
-//     */
-//    @GetMapping ( BASE_PATH + "/diaryentries/{name}" )
-//    public List<DiaryEntry> getFoodDiaryEntriesForHCP(@PathVariable final String patientName) {
-//    	return DiaryEntry.getFoodDiaryEntriesForPatient(patientName);
-//    }
-//    
+    /**
+     * Retrieves the DiaryEntries for a HCP wanting to access a patient's DiaryEntries
+     * @param patientName name of the patient to get the Diary Entries of
+     * @return list of DiaryEntries for the patient with the given name
+     */
+    @GetMapping ( BASE_PATH + "/diaryentries/{name}" )
+    public List<DiaryEntry> getFoodDiaryEntriesForHCP(@PathVariable final String name) {
+    	return DiaryEntry.getDiaryEntriesByName(name);
+    }
+    
 
 }

@@ -20,7 +20,7 @@
 			
 			angular.module('diaryApp').factory('diaryService', ['$http', '$q', '$httpBackend', function( $http, $q, $httpBackend) {
 				
-				var REST_SERVICE_URI = '/iTrust2/api/v1/diaryentries';
+				var REST_SERVICE_URI = '/iTrust2/api/v1/patientdiaryentries';
 				
 				// Initializes data for mock GET request
 				self.mockDiaryEntries = [];
@@ -43,7 +43,7 @@
 				}
 				
 				// Mock interception of REST api calls. Comment this section out to use real API
-				$httpBackend.whenRoute('GET', '/iTrust2/api/v1/diaryentries')
+				$httpBackend.whenRoute('GET', REST_SERVICE_URI)
 				   .respond(function(method, url, data, headers, params) {
 				   return [200, self.mockDiaryEntries];
 				});

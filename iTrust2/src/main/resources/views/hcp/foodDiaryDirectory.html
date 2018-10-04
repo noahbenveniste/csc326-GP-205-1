@@ -113,7 +113,7 @@
 				
 				self.diaryEntryMaster = [];
 				self.remoteUser = /*[[${#httpServletRequest.remoteUser}]]*/null;
-				self.patientName = "...";
+				$scope.patientName = "...";
 				self.searchPatientName = null;
 				
 				/** Updates the diary entry table for a HCP user or a patient */
@@ -122,7 +122,7 @@
 					// Update the master list of diary entries
 					self.diaryEntryMaster = data;
 					// Get the user's name
-					self.patientName = self.diaryEntryMaster[0].patientName;
+					$scope.patientName = self.diaryEntryMaster[0].patientName;
 
 					// Calculate nutrient totals
 				}

@@ -99,13 +99,35 @@
 				var self = this;
 				
 				// TODO: update this data format based on the JSON format of the DiaryEntry.java class when it's finished
-				self.diaryEntry = {patientName:'', date: new Date(), mealType:'', name:'', servings:'', caloriesPerServing:'', fat:'', sodium:'', carbs:'', sugar:'', fiber:'', protein:''};
+				
+				// This code is to ensure that the day is correct for the date. Since UTC is 4 hours ahead, at 8 pm EST
+				// the date rolls over to the next day. By subtracting off 4 hours, the date would roll back to the
+				// correct date for EST.
+				$scope.utcDate = new Date();
+				var offsetMin = $scope.utcDate.getTimezoneOffset(); // get the UTC offset in minutes (should be 240 for EST)
+				var offsetHr = offsetMin/60;
+				$scope.todaysDate = new Date($scope.utcDate);
+				$scope.todaysDate.setHours($scope.utcDate.getHours() - offsetHr);
+				
+				// This just normalizes the time to be midnight
+				self.todaysDateNormalized = new Date($scope.todaysDate);
+				self.todaysDateNormalized.setHours(0, 0, 0, 0); // Sets the time to midnight here (4 am UTC). 
+														   // Needs to be this way because the calendar widget converts from UTC.
+														   // If this were midnight UTC, it would display the wrong (previous) day
+				
+				self.diaryEntry = {patientName:'', date: self.todaysDateNormalized, mealType:'', name:'', servings:'', caloriesPerServing:'', fat:'', sodium:'', carbs:'', sugar:'', fiber:'', protein:''};
 				self.diaryEntryMaster = [];
 				
 				$scope.mealTypes = ['breakfast', 'lunch', 'dinner', 'snack'];
 				$scope.patientName = '';
-				$scope.maxDate = new Date(); // Represents the latest date the user can create entries for (today)
 				
+				var tempMaxDate = new Date($scope.todaysDate);
+				tempMaxDate.setHours(23, 59, 59, 999);
+				$scope.maxDate = tempMaxDate; // Represents the latest date the user can create entries for (today)
+				//$scope.maxDate.setDate($scope.maxDate.getDate() + 1); // Sets the max date to tomorrow
+				
+				$scope.currDate = self.diaryEntry.date;
+					
 				self.submit = submit;
 				self.reset = reset;
 				
@@ -168,7 +190,7 @@
 				}
 				
 				function reset() {
-					self.diaryEntry = {patientName:'', date: new Date(), mealType:'', name:'', servings:'', caloriesPerServing:'', fat:'', sodium:'', carbs:'', sugar:'', fiber:'', protein:''};
+					self.diaryEntry = {patientName:'', date: self.todaysDateNormalized, mealType:'', name:'', servings:'', caloriesPerServing:'', fat:'', sodium:'', carbs:'', sugar:'', fiber:'', protein:''};
 				    $scope.addDiaryEntryForm.$setPristine(); //reset Form
 				}
 				
@@ -212,6 +234,11 @@
 									</div>
 								</div>
 							</div>
+							<tt>UTC date and time: {{utcDate}}</tt><br/>
+							<tt>EST date and time: {{todaysDate}}</tt><br/>
+							<tt>date stored in controller, normalized from today's date in EST to be midnight: {{currDate}}</tt><br/>
+							<tt>max date allowed: {{maxDate}}</tt><br/>
+							<tt>addDiaryEntryForm.date.$valid = {{addDiaryEntryForm.date.$valid}}</tt><br/>
 							
 							<!-- Form for entering meal type; TODO: implement as a drop down menu -->
 							<div class="row">

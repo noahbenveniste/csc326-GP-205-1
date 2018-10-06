@@ -13,13 +13,13 @@ public enum Meal {
 	BREAKFAST ("breakfast"),
 	
 	/** the meal for lunch **/
-	LUNCH (" lunch "),
+	LUNCH ("lunch"),
 	
 	/** the meal for dinner **/
-	DINNER(" dinner "),
+	DINNER("dinner"),
 	
 	/** the meal for snack **/
-	SNACK(" snack ");
+	SNACK("snack");
 	
 	/** the meal name in string type **/
 	private String mealName;

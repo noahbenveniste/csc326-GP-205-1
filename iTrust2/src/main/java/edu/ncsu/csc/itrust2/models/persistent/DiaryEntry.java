@@ -23,7 +23,7 @@ import edu.ncsu.csc.itrust2.models.enums.Role;
  * HCP's can only view patient diary entries.
  * 
  * @author Jonathan Oh
- *         modify by shuzheng Wang in 10/3
+ * @author shuzheng Wang
  *
  */
 public class DiaryEntry extends DomainObject<DiaryEntry> {
@@ -109,23 +109,23 @@ public class DiaryEntry extends DomainObject<DiaryEntry> {
 	/** grams of protein per serving */
 	private int protein;
 
-//	/** Generic constructor to create a quick entry with
-//	 * 0 for the fields. this should never be used
-//	 */
-//	public DiaryEntry() {
-//		this.date = Calendar.getInstance();
-//		this.meal = Meal.BREAKFAST;
-//		this.name = "name";
-//		this.servings = 0;
-//		this.calories = 0;
-//		this.fatGrams = 0;
-//		this.sodium = 0;
-//		this.carbs = 0;
-//		this.sugars = 0;
-//		this.fibers = 0;
-//		this.protein = 0;
-//		this.patient = new User();
-//	}
+	/** Generic constructor to create a quick entry with
+	 * 0 for the fields. this should never be used
+	 */
+	public DiaryEntry() {
+		this.date = Calendar.getInstance();
+		this.meal = Meal.BREAKFAST;
+		this.name = "name";
+		this.servings = 0;
+		this.calories = 0;
+		this.fatGrams = 0;
+		this.sodium = 0;
+		this.carbs = 0;
+		this.sugars = 0;
+		this.fibers = 0;
+		this.protein = 0;
+		this.patient = new User();
+	}
 
 	/**
 	 * Constructor to create a diary entry from provided parameters.

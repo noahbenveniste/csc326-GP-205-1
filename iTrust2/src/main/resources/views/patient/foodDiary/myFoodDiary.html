@@ -24,8 +24,8 @@
 				for (var i = 0; i < 10; i++) {
 					self.mockDiaryEntries.push({
 						patientName: "Noah Benveniste",
-						date: "10/3/2018",
-						mealType: "Lunch",
+						date: new Date(2018, 5, 17).getTime(), // On the backend, store dates as milliseconds since epoch in long ints
+						mealType: "breakfast",
 						name: "bagel",
 						servings: i % 3 + 1,
 						caloriesPerServing: i * 13 + 100,
@@ -99,11 +99,12 @@
 				var self = this;
 				
 				// TODO: update this data format based on the JSON format of the DiaryEntry.java class when it's finished
-				self.diaryEntry = {patientName:'', date:'', mealType:'', name:'', servings:'', caloriesPerServing:'', fat:'', sodium:'', carbs:'', sugar:'', fiber:'', protein:''};
+				self.diaryEntry = {patientName:'', date: new Date(), mealType:'', name:'', servings:'', caloriesPerServing:'', fat:'', sodium:'', carbs:'', sugar:'', fiber:'', protein:''};
 				self.diaryEntryMaster = [];
 				
-				$scope.mealTypes = ['Breakfast', 'Lunch', 'Dinner', 'Snack'];
+				$scope.mealTypes = ['breakfast', 'lunch', 'dinner', 'snack'];
 				$scope.patientName = '';
+				$scope.maxDate = new Date(); // Represents the latest date the user can create entries for (today)
 				
 				self.submit = submit;
 				self.reset = reset;
@@ -117,7 +118,16 @@
 						.then(
 						function(data) {
 							
-							// Update the master list of diary entries
+							// Loop over the data converting the millisecond univseral date values
+							// into js Date objects
+							for (var i = 0; i < data.length; i++) {
+								// Get the milliseconds since epoch date value
+								var val = data[i].date;
+								// Convert to a date object, store
+								data[i].date = new Date(val);
+							}
+							
+							// Update the frontend's list of diary entries for display
 							self.diaryEntryMaster = data;
 							
 							// Get the user's name
@@ -133,6 +143,10 @@
 					
 					$scope.success = false;
 					$scope.failure = false;
+					
+					// Convert the date into its universal time value, can construct a java Date object from
+					// this on the backend, or just store it as is.
+					entry.date = entry.date.getTime()
 					
 					diaryService.addEntryService(entry)
 						.then(getEntries,
@@ -154,7 +168,7 @@
 				}
 				
 				function reset() {
-					self.diaryEntry = {patientName:'', date:'', mealType:'', name:'', servings:'', caloriesPerServing:'', fat:'', sodium:'', carbs:'', sugar:'', fiber:'', protein:''};
+					self.diaryEntry = {patientName:'', date: new Date(), mealType:'', name:'', servings:'', caloriesPerServing:'', fat:'', sodium:'', carbs:'', sugar:'', fiber:'', protein:''};
 				    $scope.addDiaryEntryForm.$setPristine(); //reset Form
 				}
 				
@@ -190,9 +204,11 @@
 								<div class="form-group col-md-12">
 									<label class="col-md-2 control-lable" for="file">Date</label>
 									<div class="col-md-7">
-										<input type="text" ng-model="ctrl.diaryEntry.date" name="date"
+										<input type="date" ng-model="ctrl.diaryEntry.date" name="date"
 											class="name form-control input-sm"
-											placeholder="Enter date (mm/dd/yyyy)" required="0" />
+											placeholder="yyyy-MM-dd"
+											max="{{maxDate | date:'yyyy-MM-dd'}}"
+											required="0" />
 									</div>
 								</div>
 							</div>

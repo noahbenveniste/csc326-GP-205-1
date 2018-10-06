@@ -109,22 +109,23 @@ public class DiaryEntry extends DomainObject<DiaryEntry> {
 	/** grams of protein per serving */
 	private int protein;
 
-	/** Generic constructor to create a quick entry with
-	 * 0 for the fields.
-	 */
-	public DiaryEntry() {
-		this.date = Calendar.getInstance();
-		this.meal = Meal.BREAKFAST;
-		this.name = "name";
-		this.servings = 0;
-		this.calories = 0;
-		this.fatGrams = 0;
-		this.sodium = 0;
-		this.carbs = 0;
-		this.sugars = 0;
-		this.fibers = 0;
-		this.protein = 0;
-	}
+//	/** Generic constructor to create a quick entry with
+//	 * 0 for the fields. this should never be used
+//	 */
+//	public DiaryEntry() {
+//		this.date = Calendar.getInstance();
+//		this.meal = Meal.BREAKFAST;
+//		this.name = "name";
+//		this.servings = 0;
+//		this.calories = 0;
+//		this.fatGrams = 0;
+//		this.sodium = 0;
+//		this.carbs = 0;
+//		this.sugars = 0;
+//		this.fibers = 0;
+//		this.protein = 0;
+//		this.patient = new User();
+//	}
 
 	/**
 	 * Constructor to create a diary entry from provided parameters.
@@ -143,7 +144,7 @@ public class DiaryEntry extends DomainObject<DiaryEntry> {
 	 */
 	public DiaryEntry(Calendar date, Meal meal, String name, int servings,
 			int calories, int fatGrams, int sodium, int carbs, int sugars,
-			int fibers, int protein) {
+			int fibers, int protein, User patient) {
 		this.date = date;
 		this.meal = meal;
 		this.name = "name";
@@ -156,6 +157,7 @@ public class DiaryEntry extends DomainObject<DiaryEntry> {
 		this.sugars = sugars;
 		this.fibers = fibers;
 		this.protein = protein;
+		this.patient = patient;
 	}
 
 	/**
@@ -174,6 +176,7 @@ public class DiaryEntry extends DomainObject<DiaryEntry> {
 		this.sugars = form.getEntrySugars();
 		this.fibers = form.getEntryFibers();
 		this.protein = form.getEntryProtein();
+		setPatient( User.getByNameAndRole( form.getEntryPatient(), Role.ROLE_PATIENT ) );
 	}
 
     /**

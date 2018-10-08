@@ -1,10 +1,9 @@
 package edu.ncsu.csc.itrust2.apitest;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.Calendar;
 
@@ -71,7 +70,6 @@ public class APIFoodDiaryTest {
         mvc.perform( post( "/api/v1/users" ).contentType( MediaType.APPLICATION_JSON )
                 .content( TestUtils.asJsonString( patient ) ) );
 
-        mvc.perform( delete( "/api/v1/appointmentrequests" ) );
 
         final DiaryEntryForm entry = new DiaryEntryForm();
         entry.setEntryDate( Calendar.getInstance()); entry.setEntryMeal(Meal.BREAKFAST); entry.setEntryName("name");

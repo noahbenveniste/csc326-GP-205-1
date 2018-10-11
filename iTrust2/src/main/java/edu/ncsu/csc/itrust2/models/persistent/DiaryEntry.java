@@ -3,6 +3,7 @@ package edu.ncsu.csc.itrust2.models.persistent;
 import java.util.Calendar;
 import java.util.List;
 
+import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
@@ -10,6 +11,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.criterion.Criterion;
@@ -26,6 +28,8 @@ import edu.ncsu.csc.itrust2.models.enums.Role;
  * @author shuzheng Wang
  *
  */
+@Entity
+@Table ( name = "DiaryEntry" )
 public class DiaryEntry extends DomainObject<DiaryEntry> {
 
     /**

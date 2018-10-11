@@ -4,6 +4,7 @@ package edu.ncsu.csc.itrust2.apitest;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.Calendar;
 
@@ -24,6 +25,8 @@ import edu.ncsu.csc.itrust2.forms.admin.UserForm;
 import edu.ncsu.csc.itrust2.forms.patient.DiaryEntryForm;
 import edu.ncsu.csc.itrust2.models.enums.Meal;
 import edu.ncsu.csc.itrust2.models.enums.Role;
+import edu.ncsu.csc.itrust2.models.persistent.AppointmentRequest;
+import edu.ncsu.csc.itrust2.models.persistent.DiaryEntry;
 import edu.ncsu.csc.itrust2.mvc.config.WebMvcConfiguration;
 
 /**
@@ -83,7 +86,14 @@ public class APIFoodDiaryTest {
 
         mvc.perform( get( "/api/v1/diaryentries" ) )
                 .andExpect( content().contentType( MediaType.APPLICATION_JSON_UTF8_VALUE ) );
-
+//        /*
+//         * We need the ID of the diary entry that actually got _saved_
+//         * when calling the API above. This will get it
+//         */
+//        final Long id = DiaryEntry.getFoodDiaryEntriesForPatient( patient.getUsername() ).get( 0 ).getId();
+//        
+//        mvc.perform( get( "/api/v1/diaryentries/" + id ) ).andExpect( status().isOk() )
+//        .andExpect( content().contentType( MediaType.APPLICATION_JSON_UTF8_VALUE ) );
 
     }
 }

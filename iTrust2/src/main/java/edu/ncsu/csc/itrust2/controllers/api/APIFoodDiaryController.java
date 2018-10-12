@@ -55,30 +55,31 @@ public class APIFoodDiaryController extends APIController{
      * @param patientName name of the patient to get the Diary Entries of
      * @return list of DiaryEntries for the patient with the given name
      */
-    @GetMapping ( BASE_PATH + "/diaryentries/{name}" )
-    public List<DiaryEntry> getFoodDiaryEntriesForHCP(@PathVariable final String patientName) {
-    	return DiaryEntry.getFoodDiaryEntriesForPatient(patientName);
+    @GetMapping ( BASE_PATH + "/diaryentries/{patient_id}" )
+    public List<DiaryEntry> getFoodDiaryEntriesForHCP(@PathVariable( "patient_id" ) final String patient_id) {
+    	return DiaryEntry.getFoodDiaryEntriesForHCP(patient_id);
     }
     
-    /**
-     * Retrieves the Diary entry specified by the ID provided
-     *
-     * @param id
-     *            The (numeric) ID of the diary entry desired
-     * @return The diary entry corresponding to the ID provided or
-     *         HttpStatus.NOT_FOUND if no such diary entry could be found
-     */
-    @GetMapping ( BASE_PATH + "/diaryentries/{id}" )
-    public ResponseEntity getDiaryEntryByID ( @PathVariable ( "id" ) final Long id ) {
-    	final DiaryEntry entry = DiaryEntry.getById(id);
-        if ( null != entry ) {
-            LoggerUtil.log( TransactionType.DIARY_ENTRY_ViEWED, entry.getPatient() );
-        }
-        return null == entry
-                ? new ResponseEntity( errorResponse( "No food dairy found for id " + id ),
-                        HttpStatus.NOT_FOUND )
-                : new ResponseEntity( entry, HttpStatus.OK );
-    }
+//    /**
+//     * Retrieves the Diary entry specified by the ID provided
+//     *
+//     * @param id
+//     *            The (numeric) ID of the diary entry desired
+//     * @return The diary entry corresponding to the ID provided or
+//     *         HttpStatus.NOT_FOUND if no such diary entry could be found
+//     */
+//    @GetMapping ( BASE_PATH + "/diaryentries/{id}" )
+//    public ResponseEntity getDiaryEntryByID ( @PathVariable ( "id" ) final Long id ) {
+//    	final DiaryEntry entry = DiaryEntry.getById(id);
+//        if ( null != entry ) {
+//            LoggerUtil.log( TransactionType.DIARY_ENTRY_ViEWED, entry.getPatient() );
+//        }
+//        return null == entry
+//                ? new ResponseEntity( errorResponse( "No food dairy found for id " + id ),
+//                        HttpStatus.NOT_FOUND )
+//                : new ResponseEntity( entry, HttpStatus.OK );
+//    }
+    
     /**
      * Creates an food Dairy from the RequestBody provided. Record is
      * automatically saved in the database.

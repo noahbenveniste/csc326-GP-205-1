@@ -58,6 +58,16 @@ public class DiaryEntry extends DomainObject<DiaryEntry> {
     }
     
     /**
+     * Retrieves all food diary entries for the HCP provided.
+     *
+     * @param patientName
+     *            Name of the patient
+     * @return All of their food diary entries
+     */
+    public static List<DiaryEntry> getFoodDiaryEntriesForHCP ( final String patientName ) {
+        return getWhere( eqList( "patient", User.getByNameAndRole( patientName, Role.ROLE_PATIENT ) ) );
+    }
+    /**
      * Retrieve an diary entry by its numerical ID.
      *
      * @param id

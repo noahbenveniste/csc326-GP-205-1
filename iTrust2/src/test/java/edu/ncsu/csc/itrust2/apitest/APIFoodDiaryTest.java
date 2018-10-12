@@ -84,8 +84,11 @@ public class APIFoodDiaryTest {
         mvc.perform( post( "/api/v1/diaryentries" ).contentType( MediaType.APPLICATION_JSON )
                 .content( TestUtils.asJsonString( entry ) ) );
 
-        mvc.perform( get( "/api/v1/diaryentries" ) )
+        mvc.perform( get( "/api/v1/diaryentrie" ) )
                 .andExpect( content().contentType( MediaType.APPLICATION_JSON_UTF8_VALUE ) );
+        
+        mvc.perform( get( "/api/v1/diaryentries/" + patient.getUsername() ) )
+        .andExpect( content().contentType( MediaType.APPLICATION_JSON_UTF8_VALUE ) );
 //        /*
 //         * We need the ID of the diary entry that actually got _saved_
 //         * when calling the API above. This will get it

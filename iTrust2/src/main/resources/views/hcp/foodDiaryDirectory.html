@@ -10,7 +10,7 @@
 			<div class="row">
 				<div class="col-md-12">
 					<div class="panel panel-default">
-						<div class="panel-heading ">Search Food Diary Entries by Patient</div>
+						<div class="panel-heading ">Search Food Diary Entries by username</div>
 						<div class="panel-body">
 							<form class="form-horizontal" role="form" name="viewLogForm" ng-submit="ctrl.getEntriesName()">
 								<br>
@@ -72,16 +72,16 @@
 						      "second": 48
 						    },
 						    "name": i % 2 == 0 ? "bagel" : "waffle",
-						    "servings": i % 3 + 1,
-						    "calories": i * 13 + 100,
+						    "servings": i % 2 + 1,
+						    "calories": i * 13 + 112,
 						    "fatGrams": i * 4 + i % 2,
 						    "sodium": i + (i % 2) * 3,
-						    "carbs": i % 3 * 2,
+						    "carbs": i % 3 * 2 + 1,
 						    "sugars": i % 2 + 10 + i,
 						    "fibers": i + i % 3,
-						    "protein": i % 4,
+						    "protein": i % 4 + 3,
 						    "patient": {
-						      "username": "steve",
+						      "username": name,
 						      "password": "$2FKANF492AS8H9F7NJ9RC3s.",
 						      "enabled": 1,
 						      "role": "ROLE_PATIENT",
@@ -150,11 +150,11 @@
 							name: "Daily Total",
 							servings: 0,
 							calories: 0,
-							fat: 0,
+							fatGrams: 0,
 							sodium: 0,
 							carbs: 0,
-							sugar: 0,
-							fiber: 0,
+							sugars: 0,
+							fibers: 0,
 							protein: 0,
 							style: "font-weight: bold; background-color: #EEEEEE;",
 							
@@ -166,14 +166,15 @@
 							self.diaryEntryMaster.push(totals_row);
 							totals_row = totals_row_temp();
 						}
-						totals_row.servings += entries[i].servings;
-						totals_row.caloriesPerServing += entries[i].caloriesPerServing;
-						totals_row.fat += entries[i].fat;
-						totals_row.sodium += entries[i].sodium;
-						totals_row.carbs += entries[i].carbs;
-						totals_row.sugar += entries[i].sugar;
-						totals_row.fiber += entries[i].fiber;
-						totals_row.protein += entries[i].protein;
+						var srv = entries[i].servings
+						totals_row.servings += srv;
+						totals_row.calories += srv * entries[i].calories;
+						totals_row.fatGrams += srv * entries[i].fatGrams;
+						totals_row.sodium += srv * entries[i].sodium;
+						totals_row.carbs += srv * entries[i].carbs;
+						totals_row.sugars += srv * entries[i].sugars;
+						totals_row.fibers += srv * entries[i].fibers;
+						totals_row.protein += srv * entries[i].protein;
 						
 						self.diaryEntryMaster.push(entries[i]);
 						dt = entries[i].date_ng.getTime();

@@ -34,7 +34,7 @@
 					<tbody>
 						<tr name="diaryTableRow" ng-repeat="e in ctrl.diaryEntryMaster track by $index">
 							<td style="{{e.style}}" name="dateCell">{{e.date_ng | date:'MM/dd/yyyy'}}</td>
-							<td style="{{e.style}}" name="mealCell">{{e.mealType}}</td>
+							<td style="{{e.style}}" name="mealCell">{{e.meal}}</td>
 							<td style="{{e.style}}" name="nameCell">{{e.name}}</td>
 							<td style="{{e.style}}" name="servingsCell">{{e.servings}}</td>
 							<td style="{{e.style}}" name="caloriesCell">{{e.calories}}</td>

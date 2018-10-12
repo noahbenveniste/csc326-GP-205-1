@@ -62,19 +62,32 @@
 					var mockDiaryEntries = [];
 					for (var i = 0; i < 10; i++) {
 						mockDiaryEntries.push({
-							patientName: name,
-							date: "10/3/2018",
-							mealType: "Lunch",
-							name: "bagel",
-							servings: i % 3 + 1,
-							caloriesPerServing: i * 13 + 100,
-							fat: i * 4 + i % 2,
-							sodium: i + (i % 2) * 3,
-							carbs: i % 3 * 2,
-							sugar: i % 2 + 10 + i,
-							fiber: i + i % 3,
-							protein: i % 4
-						});
+						    "meal": "DINNER",
+						    "date": {
+						      "year": 2018,
+						      "month": 5,
+						      "dayOfMonth": i % 3 + 5,
+						      "hourOfDay": 19,
+						      "minute": 52,
+						      "second": 48
+						    },
+						    "name": i % 2 == 0 ? "bagel" : "waffle",
+						    "servings": i % 3 + 1,
+						    "calories": i * 13 + 100,
+						    "fatGrams": i * 4 + i % 2,
+						    "sodium": i + (i % 2) * 3,
+						    "carbs": i % 3 * 2,
+						    "sugars": i % 2 + 10 + i,
+						    "fibers": i + i % 3,
+						    "protein": i % 4,
+						    "patient": {
+						      "username": "steve",
+						      "password": "$2FKANF492AS8H9F7NJ9RC3s.",
+						      "enabled": 1,
+						      "role": "ROLE_PATIENT",
+						    },
+						    "id": 546
+						  });
 					}
 					return mockDiaryEntries;
 				}
@@ -117,12 +130,58 @@
 				self.searchPatientName = null;
 				
 				/** Updates the diary entry table for a HCP user or a patient */
-				function updateDiaryTable(data) {
+				function updateDiaryTable(entries) {
 
+					// translate DiaryEntry.date to Date object
+					for (var i = 0; i < entries.length; i++) {
+						entries[i].date_ng = new Date(entries[i].date.year, entries[i].date.month, entries[i].date.dayOfMonth);
+					}
+					entries.sort(function(a, b){return a.date_ng.getTime() > b.date_ng.getTime(); });
+					
 					// Update the master list of diary entries
-					self.diaryEntryMaster = data;
+					self.diaryEntryMaster = [];
+					var dt = null;
+					var entries_and_total = [];
+					var totals_row_temp = function() {
+						return {
+							patientName: "",
+							date_ng: "", 
+							mealType: "",
+							name: "Daily Total",
+							servings: 0,
+							calories: 0,
+							fat: 0,
+							sodium: 0,
+							carbs: 0,
+							sugar: 0,
+							fiber: 0,
+							protein: 0,
+							style: "font-weight: bold; background-color: #EEEEEE;",
+							
+						};
+					};
+					var totals_row = totals_row_temp();
+					for (var i = 0; i < entries.length; i++) {
+						if (dt != null && dt < entries[i].date_ng.getTime()) {
+							self.diaryEntryMaster.push(totals_row);
+							totals_row = totals_row_temp();
+						}
+						totals_row.servings += entries[i].servings;
+						totals_row.caloriesPerServing += entries[i].caloriesPerServing;
+						totals_row.fat += entries[i].fat;
+						totals_row.sodium += entries[i].sodium;
+						totals_row.carbs += entries[i].carbs;
+						totals_row.sugar += entries[i].sugar;
+						totals_row.fiber += entries[i].fiber;
+						totals_row.protein += entries[i].protein;
+						
+						self.diaryEntryMaster.push(entries[i]);
+						dt = entries[i].date_ng.getTime();
+					}
+					self.diaryEntryMaster.push(totals_row);
+					
 					// Get the user's name
-					$scope.patientName = self.diaryEntryMaster[0].patientName;
+					$scope.patientName = self.diaryEntryMaster[0].patient.username;
 
 					// Calculate nutrient totals
 				}

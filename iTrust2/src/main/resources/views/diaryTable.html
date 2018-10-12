@@ -30,24 +30,22 @@
 							<th>Protein (g)</th>
 						</tr>
 					</thead>
-	
 					<!-- One diary entry per row, most recent entries at the top -->
 					<tbody>
-						<tr name="diaryTableRow" ng-repeat="e in ctrl.diaryEntryMaster">
-							<td name="dateCell">{{e.date | date:'MM/dd/yyyy'}}</td>
-							<td name="mealCell">{{e.mealType}}</td>
-							<td name="nameCell">{{e.name}}</td>
-							<td name="servingsCell">{{e.servings}}</td>
-							<td name="caloriesCell">{{e.caloriesPerServing}}</td>
-							<td name="fatCell">{{e.fat}}</td>
-							<td name="sodiumCell">{{e.sodium}}</td>
-							<td name="carbsCell">{{e.carbs}}</td>
-							<td name="sugarCell">{{e.sugar}}</td>
-							<td name="fiberCell">{{e.fiber}}</td>
-							<td name="proteinCell">{{e.protein}}</td>
+						<tr name="diaryTableRow" ng-repeat="e in ctrl.diaryEntryMaster track by $index">
+							<td style="{{e.style}}" name="dateCell">{{e.date_ng | date:'MM/dd/yyyy'}}</td>
+							<td style="{{e.style}}" name="mealCell">{{e.mealType}}</td>
+							<td style="{{e.style}}" name="nameCell">{{e.name}}</td>
+							<td style="{{e.style}}" name="servingsCell">{{e.servings}}</td>
+							<td style="{{e.style}}" name="caloriesCell">{{e.calories}}</td>
+							<td style="{{e.style}}" name="fatCell">{{e.fatGrams}}</td>
+							<td style="{{e.style}}" name="sodiumCell">{{e.sodium}}</td>
+							<td style="{{e.style}}" name="carbsCell">{{e.carbs}}</td>
+							<td style="{{e.style}}" name="sugarCell">{{e.sugars}}</td>
+							<td style="{{e.style}}" name="fiberCell">{{e.fibers}}</td>
+							<td style="{{e.style}}" name="proteinCell">{{e.protein}}</td>
 						</tr>
 					</tbody>
-	
 				</table>
 			</div>
 		</div>

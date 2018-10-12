@@ -11,7 +11,7 @@ import edu.ncsu.csc.itrust2.models.enums.Meal;
 import edu.ncsu.csc.itrust2.models.enums.Role;
 import edu.ncsu.csc.itrust2.models.persistent.DiaryEntry;
 import edu.ncsu.csc.itrust2.models.persistent.User;
-
+ 
 public class DiaryEntryTest {
 
 	@Test

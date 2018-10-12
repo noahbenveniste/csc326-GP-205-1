@@ -93,24 +93,34 @@ public class DiaryEntry extends DomainObject<DiaryEntry> {
     private Meal meal;
 
 	/** date the entry was logged. mm/dd/yyyy */
+    @NotNull
     private Calendar date ;
 	/** name of the entry */
+    @NotNull
 	private String name;
 	/** number of servings */
+    @NotNull
 	private int servings;
 	/** number of calories */
+    @NotNull
 	private int calories;
 	/** grams of fat per serving */
+    @NotNull
 	private int fatGrams;
 	/** milligrams of sodium per serving */
+    @NotNull
 	private int sodium;
 	/** grams of carbs per serving */
+    @NotNull
 	private int carbs;
 	/** grams of sugars per serving */
+    @NotNull
 	private int sugars;
-	/** grams of fiber per serving */ 
+	/** grams of fiber per serving */
+    @NotNull
 	private int fibers;
 	/** grams of protein per serving */
+    @NotNull    
 	private int protein;
 
 	/** Generic constructor to create a quick entry with

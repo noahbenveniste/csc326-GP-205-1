@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,7 +14,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import edu.ncsu.csc.itrust2.forms.patient.DiaryEntryForm;
 import edu.ncsu.csc.itrust2.models.enums.TransactionType;
+import edu.ncsu.csc.itrust2.models.persistent.AppointmentRequest;
 import edu.ncsu.csc.itrust2.models.persistent.DiaryEntry;
+import edu.ncsu.csc.itrust2.models.persistent.DomainObject;
+import edu.ncsu.csc.itrust2.models.persistent.Patient;
 import edu.ncsu.csc.itrust2.utils.LoggerUtil;
 
 /**
@@ -29,15 +33,15 @@ import edu.ncsu.csc.itrust2.utils.LoggerUtil;
 @SuppressWarnings ( { "unchecked", "rawtypes" } )
 public class APIFoodDiaryController extends APIController{
 
-    /**
-     * Retrieves a list of all food diary entries in the database
-     *
-     * @return list of food diary entries
-     */
-    @GetMapping ( BASE_PATH + "/diaryentries" )
-    public List<DiaryEntry> getFoodDiaryEntries () {
-        return DiaryEntry.getFoodDiaryEntries();
-    }
+//    /**
+//     * Retrieves a list of all food diary entries in the database
+//     *
+//     * @return list of food diary entries
+//     */
+//    @GetMapping ( BASE_PATH + "/diaryentries" )
+//    public List<DiaryEntry> getFoodDiaryEntries () {
+//        return DiaryEntry.getFoodDiaryEntries();
+//    }
 
     /**
      * Retrieves the DiaryEntries for a patient wanting to access their DiaryEntries
@@ -46,6 +50,8 @@ public class APIFoodDiaryController extends APIController{
      */
     @GetMapping ( BASE_PATH + "/diaryentrie" )
     public List<DiaryEntry> getFoodDiaryEntriesForPatient () {
+    	LoggerUtil.log( TransactionType.DIARY_ENTRY_ViEWED, LoggerUtil.currentUser(),
+	                "patient retrieved diary entries for patient with username ");
         return DiaryEntry.getFoodDiaryEntriesForPatient( LoggerUtil.currentUser() ).stream()
         		.collect( Collectors.toList() );
     }
@@ -55,10 +61,18 @@ public class APIFoodDiaryController extends APIController{
      * @param patientName name of the patient to get the Diary Entries of
      * @return list of DiaryEntries for the patient with the given name
      */
-    @GetMapping ( BASE_PATH + "/diaryentries/{patient_id}" )
+    @SuppressWarnings("unused")
+	@GetMapping ( BASE_PATH + "/diaryentries/{patient_id}" )
     public List<DiaryEntry> getFoodDiaryEntriesForHCP(@PathVariable( "patient_id" ) final String patient_id) {
-    	return DiaryEntry.getFoodDiaryEntriesForHCP(patient_id);
+    	final Patient patient = new Patient(patient_id);
+    	if(patient == null) {
+    		return null;
+    	}
+    		 LoggerUtil.log( TransactionType.DIARY_ENTRY_VIEWEDBYHCP, LoggerUtil.currentUser(), patient_id ,
+    	                "HCP retrieved diary entries for patient with username " + patient_id );
+    		 return DiaryEntry.getFoodDiaryEntriesForHCP(patient_id);
     }
+
     
 //    /**
 //     * Retrieves the Diary entry specified by the ID provided
@@ -79,7 +93,26 @@ public class APIFoodDiaryController extends APIController{
 //                        HttpStatus.NOT_FOUND )
 //                : new ResponseEntity( entry, HttpStatus.OK );
 //    }
-    
+
+    /**
+     * Deletes _all_ of the Diary entries stored in the system. Exercise
+     * caution before calling this method.
+     *
+     * @return reponse
+     */
+    @DeleteMapping ( BASE_PATH + "/diaryentries" )
+    public ResponseEntity deleteAllFoodDiaries () {
+        try {
+            DomainObject.deleteAll( DiaryEntry.class );
+            return new ResponseEntity( successResponse( "Successfully deleted all FoodDiaryEntry" ),
+                    HttpStatus.OK );
+        }
+        catch ( final Exception e ) {
+            return new ResponseEntity(
+                    errorResponse( "Could not delete one or more DiaryEntry " + e.getMessage() ),
+                    HttpStatus.BAD_REQUEST );
+        }
+    }
     /**
      * Creates an food Dairy from the RequestBody provided. Record is
      * automatically saved in the database.

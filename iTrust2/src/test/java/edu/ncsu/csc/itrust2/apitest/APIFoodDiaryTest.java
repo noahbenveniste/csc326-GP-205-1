@@ -1,6 +1,7 @@
 package edu.ncsu.csc.itrust2.apitest;
 
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -52,7 +53,36 @@ public class APIFoodDiaryTest {
     public void setup () {
         mvc = MockMvcBuilders.webAppContextSetup( context ).build();
     }
-    
+    /**
+     * Tests APi Food dairy controller handle the bad request
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testFoodDiaryControllerAPIBadRequest () throws Exception {
+
+        /*
+         * Create a HCP and a Patient to use. If they already exist, this will
+         * do nothing
+         */
+        final UserForm hcp = new UserForm( "hcp", "123456", Role.ROLE_HCP, 1 );
+        mvc.perform( post( "/api/v1/users" ).contentType( MediaType.APPLICATION_JSON )
+                .content( TestUtils.asJsonString( hcp ) ) );
+
+        final UserForm patient = new UserForm( "patient", "123456", Role.ROLE_PATIENT, 1 );
+        mvc.perform( post( "/api/v1/users" ).contentType( MediaType.APPLICATION_JSON )
+                .content( TestUtils.asJsonString( patient ) ) );
+
+        mvc.perform( delete( "/api/v1/diaryentries" ) );
+
+        final DiaryEntryForm entry = new DiaryEntryForm();
+
+        /* Create the request */
+        mvc.perform( post( "/api/v1/diaryentries" ).contentType( MediaType.APPLICATION_JSON )
+                .content( TestUtils.asJsonString( entry ) ) ).andExpect( status().isBadRequest() );
+
+        mvc.perform( delete( "/api/v1/diaryentries" ) );
+    }    
     /**
      * Tests APi Food dairy controller
      *
@@ -73,6 +103,7 @@ public class APIFoodDiaryTest {
         mvc.perform( post( "/api/v1/users" ).contentType( MediaType.APPLICATION_JSON )
                 .content( TestUtils.asJsonString( patient ) ) );
 
+        mvc.perform( delete( "/api/v1/diaryentries" ) );
 
         final DiaryEntryForm entry = new DiaryEntryForm();
         entry.setEntryDate( Calendar.getInstance()); entry.setEntryMeal(Meal.BREAKFAST); entry.setEntryName("name");
@@ -89,6 +120,8 @@ public class APIFoodDiaryTest {
         
         mvc.perform( get( "/api/v1/diaryentries/" + patient.getUsername() ) )
         .andExpect( content().contentType( MediaType.APPLICATION_JSON_UTF8_VALUE ) );
+        
+        mvc.perform( get( "/api/v1/diaryentries/" + "someBody" ) );
 //        /*
 //         * We need the ID of the diary entry that actually got _saved_
 //         * when calling the API above. This will get it

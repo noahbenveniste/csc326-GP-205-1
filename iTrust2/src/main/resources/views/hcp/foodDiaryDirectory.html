@@ -121,7 +121,10 @@
 
 			}]);
 			
-			angular.module('diaryAppHCP').controller('diaryCtrl', ['$scope', 'diaryService', function( $scope, diaryService ) {
+			/**
+			 * Handles getting Food Diary entries by patient name and filling the table
+			 */
+			angular.module('diaryAppHCP').controller('diaryCtrl', ['$scope', 'diaryService', function( $scope, diaryService, diaryTable ) {
 				var self = this;
 				
 				self.diaryEntryMaster = [];
@@ -136,28 +139,18 @@
 					for (var i = 0; i < entries.length; i++) {
 						entries[i].date_ng = new Date(entries[i].date.year, entries[i].date.month, entries[i].date.dayOfMonth);
 					}
+					// sort entries by date so they appear in order
 					entries.sort(function(a, b){return a.date_ng.getTime() > b.date_ng.getTime(); });
 					
-					// Update the master list of diary entries
+					// Update the master list of diary entries with daily totals
 					self.diaryEntryMaster = [];
 					var dt = null;
 					var entries_and_total = [];
 					var totals_row_temp = function() {
 						return {
-							patientName: "",
-							date_ng: "", 
-							mealType: "",
-							name: "Daily Total",
-							servings: 0,
-							calories: 0,
-							fatGrams: 0,
-							sodium: 0,
-							carbs: 0,
-							sugars: 0,
-							fibers: 0,
-							protein: 0,
-							style: "font-weight: bold; background-color: #EEEEEE;",
-							
+							patientName: "", date_ng: "", mealType: "", name: "Daily Total",
+							servings: 0, calories: 0, fatGrams: 0, sodium: 0, carbs: 0, sugars: 0,
+							fibers: 0, protein: 0, style: "font-weight: bold; background-color: #EEEEEE;"
 						};
 					};
 					var totals_row = totals_row_temp();
@@ -166,6 +159,7 @@
 							self.diaryEntryMaster.push(totals_row);
 							totals_row = totals_row_temp();
 						}
+						// calculate totals of diary entries. must multiply by servings
 						var srv = entries[i].servings
 						totals_row.servings += srv;
 						totals_row.calories += srv * entries[i].calories;
@@ -193,7 +187,6 @@
 							console.error('Error while getting diary entries (getEntriesName)');
 						});
 				}
-				
 			}]);
 			/*]]>*/
 		</script>

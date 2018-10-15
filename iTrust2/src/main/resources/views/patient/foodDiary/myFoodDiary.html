@@ -22,20 +22,33 @@
 				self.mockDiaryEntries = [];
 				
 				for (var i = 0; i < 10; i++) {
-					self.mockDiaryEntries.push({
-						patientName: "Noah Benveniste",
-						date: new Date(2018, 5, 17).getTime(), // On the backend, store dates as milliseconds since epoch in long ints
-						mealType: "breakfast",
-						name: "bagel",
-						servings: i % 3 + 1,
-						caloriesPerServing: i * 13 + 100,
-						fat: i * 4 + i % 2,
-						sodium: i + (i % 2) * 3,
-						carbs: i % 3 * 2,
-						sugar: i % 2 + 10 + i,
-						fiber: i + i % 3,
-						protein: i % 4
-					});
+					mockDiaryEntries.push({
+					    "meal": "DINNER",
+					    "date": {
+					      "year": 2018,
+					      "month": 5,
+					      "dayOfMonth": i % 3 + 5,
+					      "hourOfDay": 19,
+					      "minute": 52,
+					      "second": 48
+					    },
+					    "name": i % 2 == 0 ? "bagel" : "waffle",
+					    "servings": i % 2 + 1,
+					    "calories": i * 13 + 112,
+					    "fatGrams": i * 4 + i % 2,
+					    "sodium": i + (i % 2) * 3,
+					    "carbs": i % 3 * 2 + 1,
+					    "sugars": i % 2 + 10 + i,
+					    "fibers": i + i % 3,
+					    "protein": i % 4 + 3,
+					    "patient": {
+					      "username": 'patient',
+					      "password": "$2FKANF492AS8H9F7NJ9RC3s.",
+					      "enabled": 1,
+					      "role": "ROLE_PATIENT",
+					    },
+					    "id": 546
+					  });
 				}
 				
 				// Mock interception of REST api calls. Comment this section out to use real API
@@ -115,10 +128,10 @@
 														   // Needs to be this way because the calendar widget converts from UTC.
 														   // If this were midnight UTC, it would display the wrong (previous) day
 				
-				self.diaryEntry = {patientName:'', date: self.todaysDateNormalized, mealType:'', name:'', servings:'', caloriesPerServing:'', fat:'', sodium:'', carbs:'', sugar:'', fiber:'', protein:''};
+				self.diaryEntry = {'meal':'', 'date': self.todaysDateNormalized, 'name':'', 'servings':'', 'calories':'', 'fatGrams':'', 'sodium':'', 'carbs':'', 'sugars':'', 'fibers':'', 'protein':'', 'patient': { 'username':'', 'password':'', 'enabled':'', 'role':'' }, 'id':'' };
 				self.diaryEntryMaster = [];
 				
-				$scope.mealTypes = ['breakfast', 'lunch', 'dinner', 'snack'];
+				$scope.mealTypes = ['BREAKFAST', 'LUNCH', 'DINNER', 'SNACK'];
 				$scope.patientName = '';
 				
 				var tempMaxDate = new Date($scope.todaysDate);
@@ -133,27 +146,73 @@
 				
 				getEntries();
 				
-				// Calculate nutrient totals
-				
 				function getEntries() {
 					diaryService.getEntriesService()
 						.then(
 						function(data) {
 							
+							updateDiaryTable(data);
 							// Loop over the data converting the millisecond univseral date values
 							// into js Date objects
+							/*
 							for (var i = 0; i < data.length; i++) {
-								// Get the milliseconds since epoch date value
-								var val = data[i].date;
-								// Convert to a date object, store
-								data[i].date = new Date(val);
+								// Convert to a js Date object, store
+								var temp = new Date(data[i].date.year, data[i].date.month, data[i].date.dayOfMonth);
+								data[i].date = temp;
+							}
+							*/
+							// Update the frontend's list of diary entries for display
+							//self.diaryEntryMaster = data;
+							
+							/** Updates the diary entry table for a HCP user or a patient */
+							function updateDiaryTable(entries) {
+				
+								// translate DiaryEntry.date to Date object
+								for (var i = 0; i < entries.length; i++) {
+									entries[i].date = new Date(entries[i].date.year, entries[i].date.month, entries[i].date.dayOfMonth);
+								}
+								// sort entries by date so they appear in order
+								entries.sort(function(a, b){return a.date.getTime() > b.date.getTime(); });
+								
+								// Update the master list of diary entries with daily totals
+								self.diaryEntryMaster = [];
+								var dt = null;
+								var entries_and_total = [];
+								var totals_row_temp = function() {
+									return {
+										patientName: "", date: "", mealType: "", name: "Daily Total",
+										servings: 0, calories: 0, fatGrams: 0, sodium: 0, carbs: 0, sugars: 0,
+										fibers: 0, protein: 0, style: "font-weight: bold; background-color: #EEEEEE;"
+									};
+								};
+								var totals_row = totals_row_temp();
+								for (var i = 0; i < entries.length; i++) {
+									if (dt != null && dt < entries[i].date.getTime()) {
+										self.diaryEntryMaster.push(totals_row);
+										totals_row = totals_row_temp();
+									}
+									// calculate totals of diary entries. must multiply by servings
+									var srv = entries[i].servings
+									totals_row.servings += srv;
+									totals_row.calories += srv * entries[i].calories;
+									totals_row.fatGrams += srv * entries[i].fatGrams;
+									totals_row.sodium += srv * entries[i].sodium;
+									totals_row.carbs += srv * entries[i].carbs;
+									totals_row.sugars += srv * entries[i].sugars;
+									totals_row.fibers += srv * entries[i].fibers;
+									totals_row.protein += srv * entries[i].protein;
+									
+									self.diaryEntryMaster.push(entries[i]);
+									dt = entries[i].date.getTime();
+								}
+								self.diaryEntryMaster.push(totals_row);
+								
+								// Get the user's name
+								$scope.patientName = self.diaryEntryMaster[0].patient.username;
 							}
 							
-							// Update the frontend's list of diary entries for display
-							self.diaryEntryMaster = data;
-							
 							// Get the user's name
-							$scope.patientName = self.diaryEntryMaster[0].patientName;
+							//$scope.patientName = self.diaryEntryMaster[0].patient.username;
 						},
 						function(errResponse) {
 							console.error('Error while getting diary entries (getEntries)');
@@ -166,9 +225,9 @@
 					$scope.success = false;
 					$scope.failure = false;
 					
-					// Convert the date into its universal time value, can construct a java Date object from
-					// this on the backend, or just store it as is.
-					entry.date = entry.date.getTime()
+					// Convert the js Date object into something that can be converted by the backend
+					var old = entry.date;
+					entry.date = { 'year': old.getFullYear(), 'month': old.getMonth(), 'dayOfMonth': old.getDate(), 'hourOfDay': old.getHours(), 'minute': old.getMinutes(), 'second': old.getSeconds() };
 					
 					diaryService.addEntryService(entry)
 						.then(getEntries,
@@ -190,7 +249,7 @@
 				}
 				
 				function reset() {
-					self.diaryEntry = {patientName:'', date: self.todaysDateNormalized, mealType:'', name:'', servings:'', caloriesPerServing:'', fat:'', sodium:'', carbs:'', sugar:'', fiber:'', protein:''};
+					self.diaryEntry = {'meal':'', 'date': self.todaysDateNormalized, 'name':'', 'servings':'', 'calories':'', 'fatGrams':'', 'sodium':'', 'carbs':'', 'sugars':'', 'fibers':'', 'protein':'', 'patient': { 'username':'', 'password':'', 'enabled':'', 'role':'' }, 'id':'' };
 				    $scope.addDiaryEntryForm.$setPristine(); //reset Form
 				}
 				
@@ -246,12 +305,12 @@
 								<div class="form-group col-md-12">
 									<label class="col-md-2 control-lable" for="file">Select meal type</label>
 									<div class="col-md-7">
-										<select ng-model="ctrl.diaryEntry.mealType" name="mealType"
+										<select ng-model="ctrl.diaryEntry.meal" name="meal"
 											placeholder="Select meal type" required="0">
    											<option ng-repeat="m in mealTypes">{{m}}</option>
 										</select>
 										<div class="has-error" ng-show="addDiaryEntryForm.$dirty">
-											<span ng-show="addDiaryEntryForm.mealType.$error.required">This
+											<span ng-show="addDiaryEntryForm.meal.$error.required">This
 												is a required field. </span>
 										</div>
 									</div>
@@ -303,18 +362,18 @@
 								<div class="form-group col-md-12">
 									<label class="col-md-2 control-lable" for="file">Calories per serving</label>
 									<div class="col-md-7">
-										<input type="number" ng-model="ctrl.diaryEntry.caloriesPerServing" name="caloriesPerServing"
+										<input type="number" ng-model="ctrl.diaryEntry.calories" name="calories"
 											class="name form-control input-sm"
 											placeholder="Enter calories per serving"
 											ng-pattern="/^[0-9]+$/"
 											min="0" 
 											required="0" />
 										<div class="has-error" ng-show="addDiaryEntryForm.$dirty">
-											<span ng-show="addDiaryEntryForm.caloriesPerServing.$error.required">This
+											<span ng-show="addDiaryEntryForm.calories.$error.required">This
 												is a required field. </span>
-											<span ng-show="addDiaryEntryForm.caloriesPerServing.$error.min">Minimum
+											<span ng-show="addDiaryEntryForm.calories.$error.min">Minimum
 												amount is 0. </span>
-											<span ng-show="addDiaryEntryForm.caloriesPerServing.$error.pattern">Must be a positive
+											<span ng-show="addDiaryEntryForm.calories.$error.pattern">Must be a positive
 												integer greater than or equal to 0. </span>
 										</div>
 									</div>
@@ -326,18 +385,18 @@
 								<div class="form-group col-md-12">
 									<label class="col-md-2 control-lable" for="file">Amount fat per serving (g)</label>
 									<div class="col-md-7">
-										<input type="number" ng-model="ctrl.diaryEntry.fat" name="fat"
+										<input type="number" ng-model="ctrl.diaryEntry.fatGrams" name="fatGrams"
 											class="name form-control input-sm"
 											placeholder="Enter fat per serving (g)"
 											ng-pattern="/^[0-9]+$/"
 											min="0" 
 											required="0" />
 										<div class="has-error" ng-show="addDiaryEntryForm.$dirty">
-											<span ng-show="addDiaryEntryForm.fat.$error.required">This
+											<span ng-show="addDiaryEntryForm.fatGrams.$error.required">This
 												is a required field. </span>
-											<span ng-show="addDiaryEntryForm.fat.$error.min">Minimum
+											<span ng-show="addDiaryEntryForm.fatGrams.$error.min">Minimum
 												amount is 0. </span>
-											<span ng-show="addDiaryEntryForm.fat.$error.pattern">Must be a positive
+											<span ng-show="addDiaryEntryForm.fatGrams.$error.pattern">Must be a positive
 												integer greater than or equal to 0. </span>
 										</div>
 									</div>
@@ -395,18 +454,18 @@
 								<div class="form-group col-md-12">
 									<label class="col-md-2 control-lable" for="file">Amount sugar per serving (g)</label>
 									<div class="col-md-7">
-										<input type="number" ng-model="ctrl.diaryEntry.sugar" name="sugar"
+										<input type="number" ng-model="ctrl.diaryEntry.sugars" name="sugars"
 											class="name form-control input-sm"
 											placeholder="Enter sugar per serving (mg)"
 											ng-pattern="/^[0-9]+$/"
 											min="0" 
 											required="0" />
 										<div class="has-error" ng-show="addDiaryEntryForm.$dirty">
-											<span ng-show="addDiaryEntryForm.sugar.$error.required">This
+											<span ng-show="addDiaryEntryForm.sugars.$error.required">This
 												is a required field. </span>
-											<span ng-show="addDiaryEntryForm.sugar.$error.min">Minimum
+											<span ng-show="addDiaryEntryForm.sugars.$error.min">Minimum
 												amount is 0. </span>
-											<span ng-show="addDiaryEntryForm.sugar.$error.pattern">Must be a positive
+											<span ng-show="addDiaryEntryForm.sugars.$error.pattern">Must be a positive
 												integer greater than or equal to 0. </span>
 										</div>
 									</div>
@@ -418,18 +477,18 @@
 								<div class="form-group col-md-12">
 									<label class="col-md-2 control-lable" for="file">Amount fiber per serving (g)</label>
 									<div class="col-md-7">
-										<input type="number" ng-model="ctrl.diaryEntry.fiber" name="fiber"
+										<input type="number" ng-model="ctrl.diaryEntry.fibers" name="fibers"
 											class="name form-control input-sm"
 											placeholder="Enter fiber per serving (mg)"
 											ng-pattern="/^[0-9]+$/"
 											min="0" 
 											required="0" />
 										<div class="has-error" ng-show="addDiaryEntryForm.$dirty">
-											<span ng-show="addDiaryEntryForm.fiber.$error.required">This
+											<span ng-show="addDiaryEntryForm.fibers.$error.required">This
 												is a required field. </span>
-											<span ng-show="addDiaryEntryForm.fiber.$error.min">Minimum
+											<span ng-show="addDiaryEntryForm.fibers.$error.min">Minimum
 												amount is 0. </span>
-											<span ng-show="addDiaryEntryForm.fiber.$error.pattern">Must be a positive
+											<span ng-show="addDiaryEntryForm.fibers.$error.pattern">Must be a positive
 												integer greater than or equal to 0. </span>
 										</div>
 									</div>

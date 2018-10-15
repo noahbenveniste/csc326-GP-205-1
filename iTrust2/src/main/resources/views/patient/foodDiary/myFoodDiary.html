@@ -1,0 +1,488 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:include="layout :: head(title=~{::title},links=~{})">
+<title>My Food Diary</title>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
+</head>
+<body th:include="layout :: body" th:with="content=~{::content}">
+	<div th:fragment="content">
+		
+		<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.6.5/angular-mocks.js"></script>
+		
+		<!-- javascript stuff -->
+		<script th:inline="javascript">
+		
+			var app = angular.module('diaryApp',['ngMockE2E']);
+			
+			angular.module('diaryApp').factory('diaryService', ['$http', '$q', '$httpBackend', function( $http, $q, $httpBackend) {
+				
+				var REST_SERVICE_URI = '/iTrust2/api/v1/patientdiaryentries';
+				
+				// Initializes data for mock GET request
+				self.mockDiaryEntries = [];
+				
+				for (var i = 0; i < 10; i++) {
+					self.mockDiaryEntries.push({
+						patientName: "Noah Benveniste",
+						date: new Date(2018, 5, 17).getTime(), // On the backend, store dates as milliseconds since epoch in long ints
+						mealType: "breakfast",
+						name: "bagel",
+						servings: i % 3 + 1,
+						caloriesPerServing: i * 13 + 100,
+						fat: i * 4 + i % 2,
+						sodium: i + (i % 2) * 3,
+						carbs: i % 3 * 2,
+						sugar: i % 2 + 10 + i,
+						fiber: i + i % 3,
+						protein: i % 4
+					});
+				}
+				
+				// Mock interception of REST api calls. Comment this section out to use real API
+				$httpBackend.whenRoute('GET', REST_SERVICE_URI)
+				   .respond(function(method, url, data, headers, params) {
+				   return [200, self.mockDiaryEntries];
+				});
+				
+				$httpBackend.whenRoute('PUT', REST_SERVICE_URI)
+					.respond(function(method, url, data, headers, params) {
+					let obj = JSON.parse(data);
+				    self.mockDiaryEntries.push(obj);
+				    
+				    // Code to sort the list (Note: this should occur on the backend, this is just for mocking purposes)
+				    
+				    return [201, mockDiaryEntries];
+				});
+				// end mock interception
+				
+				// Services
+				var factory = {
+					getEntriesService: getEntriesService,
+					addEntryService: addEntryService
+				};
+				
+				return factory;
+				
+				function getEntriesService() {
+					var deferred = $q.defer();
+					$http.get(REST_SERVICE_URI)
+						.then(
+						function(response) {
+							deferred.resolve(response.data);
+						},
+						function(errResponse) {
+							console.error('Error while getting diary entries (getEntriesService)')
+							deferred.reject(errResponse);
+						}
+					);
+					return deferred.promise;
+				}
+				
+				function addEntryService(entry) {
+					var deferred = $q.defer();
+					$http.put(REST_SERVICE_URI, entry)
+						.then(
+						function(response) {
+							deferred.resolve(response.data);
+						},
+						function(errResponse) {
+							console.error('Error while adding diary entry')
+							deferred.reject(errResponse);
+						}
+					);
+					return deferred.promise;
+				}
+
+			}]);
+			
+			angular.module('diaryApp').controller('diaryCtrl', ['$scope', 'diaryService', function( $scope, diaryService ) {
+				var self = this;
+				
+				// TODO: update this data format based on the JSON format of the DiaryEntry.java class when it's finished
+				
+				// This code is to ensure that the day is correct for the date. Since UTC is 4 hours ahead, at 8 pm EST
+				// the date rolls over to the next day. By subtracting off 4 hours, the date would roll back to the
+				// correct date for EST.
+				$scope.utcDate = new Date();
+				var offsetMin = $scope.utcDate.getTimezoneOffset(); // get the UTC offset in minutes (should be 240 for EST)
+				var offsetHr = offsetMin/60;
+				$scope.todaysDate = new Date($scope.utcDate);
+				$scope.todaysDate.setHours($scope.utcDate.getHours() - offsetHr);
+				
+				// This just normalizes the time to be midnight
+				self.todaysDateNormalized = new Date($scope.todaysDate);
+				self.todaysDateNormalized.setHours(0, 0, 0, 0); // Sets the time to midnight here (4 am UTC). 
+														   // Needs to be this way because the calendar widget converts from UTC.
+														   // If this were midnight UTC, it would display the wrong (previous) day
+				
+				self.diaryEntry = {patientName:'', date: self.todaysDateNormalized, mealType:'', name:'', servings:'', caloriesPerServing:'', fat:'', sodium:'', carbs:'', sugar:'', fiber:'', protein:''};
+				self.diaryEntryMaster = [];
+				
+				$scope.mealTypes = ['breakfast', 'lunch', 'dinner', 'snack'];
+				$scope.patientName = '';
+				
+				var tempMaxDate = new Date($scope.todaysDate);
+				tempMaxDate.setHours(23, 59, 59, 999);
+				$scope.maxDate = tempMaxDate; // Represents the latest date the user can create entries for (today)
+				//$scope.maxDate.setDate($scope.maxDate.getDate() + 1); // Sets the max date to tomorrow
+				
+				$scope.currDate = self.diaryEntry.date;
+					
+				self.submit = submit;
+				self.reset = reset;
+				
+				getEntries();
+				
+				// Calculate nutrient totals
+				
+				function getEntries() {
+					diaryService.getEntriesService()
+						.then(
+						function(data) {
+							
+							// Loop over the data converting the millisecond univseral date values
+							// into js Date objects
+							for (var i = 0; i < data.length; i++) {
+								// Get the milliseconds since epoch date value
+								var val = data[i].date;
+								// Convert to a date object, store
+								data[i].date = new Date(val);
+							}
+							
+							// Update the frontend's list of diary entries for display
+							self.diaryEntryMaster = data;
+							
+							// Get the user's name
+							$scope.patientName = self.diaryEntryMaster[0].patientName;
+						},
+						function(errResponse) {
+							console.error('Error while getting diary entries (getEntries)');
+						}
+					);
+				}
+				
+				function addEntry(entry) {
+					
+					$scope.success = false;
+					$scope.failure = false;
+					
+					// Convert the date into its universal time value, can construct a java Date object from
+					// this on the backend, or just store it as is.
+					entry.date = entry.date.getTime()
+					
+					diaryService.addEntryService(entry)
+						.then(getEntries,
+						function(errResponse) {
+							$scope.failure = true;
+							$scope.success = false;
+							console.error('Error while adding diary entry');
+						}
+					);
+					
+					$scope.success = !($scope.failure);
+					
+				}
+				
+				function submit() {
+					addEntry(self.diaryEntry);
+					console.log('Diary entry added');
+					reset();
+				}
+				
+				function reset() {
+					self.diaryEntry = {patientName:'', date: self.todaysDateNormalized, mealType:'', name:'', servings:'', caloriesPerServing:'', fat:'', sodium:'', carbs:'', sugar:'', fiber:'', protein:''};
+				    $scope.addDiaryEntryForm.$setPristine(); //reset Form
+				}
+				
+			}]);
+			
+		</script>
+		
+		<!-- TODO: input validation for creating a diary entry -->
+		<!-- Diary entry table -->
+		<div ng-app="diaryApp" ng-controller="diaryCtrl as ctrl">
+			<div th:include="diaryTable :: diaryTable"></div>
+			
+			<div class="generic-container">
+				<div class="panel panel-default">
+				
+					<!-- Heading -->
+					<div class="panel-heading">
+						<span class="lead">Add an entry</span>
+					</div>
+					
+					<!-- Entry forms -->
+					<div class="formcontainer">
+						<form ng-submit="ctrl.submit()" name="addDiaryEntryForm" class="form-horizontal">
+						
+							<!-- Padding so date field isn't overlapping header -->
+							<div class="row">
+								<div class="form-group col-md-12">
+								</div>
+							</div>
+							
+							<!-- Form for entering date; TODO: proper form validation -->
+							<div class="row">
+								<div class="form-group col-md-12">
+									<label class="col-md-2 control-lable" for="file">Date</label>
+									<div class="col-md-7">
+										<input type="date" ng-model="ctrl.diaryEntry.date" name="date"
+											class="name form-control input-sm"
+											placeholder="yyyy-MM-dd"
+											max="{{maxDate | date:'yyyy-MM-dd'}}"
+											required="0" />
+									</div>
+								</div>
+							</div>
+							<!-- The lines below are for debugging date validation, in case that decides to break again
+							<tt>UTC date and time: {{utcDate}}</tt><br/>
+							<tt>EST date and time: {{todaysDate}}</tt><br/>
+							<tt>date stored in controller, normalized from today's date in EST to be midnight: {{currDate}}</tt><br/>
+							<tt>max date allowed: {{maxDate}}</tt><br/>
+							<tt>addDiaryEntryForm.date.$valid = {{addDiaryEntryForm.date.$valid}}</tt><br/>
+							
+							<!-- Form for entering meal type; TODO: implement as a drop down menu -->
+							<div class="row">
+								<div class="form-group col-md-12">
+									<label class="col-md-2 control-lable" for="file">Select meal type</label>
+									<div class="col-md-7">
+										<select ng-model="ctrl.diaryEntry.mealType" name="mealType"
+											placeholder="Select meal type" required="0">
+   											<option ng-repeat="m in mealTypes">{{m}}</option>
+										</select>
+										<div class="has-error" ng-show="addDiaryEntryForm.$dirty">
+											<span ng-show="addDiaryEntryForm.mealType.$error.required">This
+												is a required field. </span>
+										</div>
+									</div>
+								</div>
+							</div>
+							
+							
+							<!-- Form for entering food name; TODO: form scrubbing for security -->
+							<div class="row">
+								<div class="form-group col-md-12">
+									<label class="col-md-2 control-lable" for="file">Name of food</label>
+									<div class="col-md-7">
+										<input type="text" ng-model="ctrl.diaryEntry.name" name="name"
+											class="name form-control input-sm"
+											placeholder="Enter name of food" required="0" />
+										<div class="has-error" ng-show="addDiaryEntryForm.$dirty">
+											<span ng-show="addDiaryEntryForm.name.$error.required">This
+												is a required field. </span>
+										</div>
+									</div>
+								</div>
+							</div>
+							
+							<!-- Form for entering number of servings, must be an int greater than 0 -->
+							<div class="row">
+								<div class="form-group col-md-12">
+									<label class="col-md-2 control-lable" for="file">Number of servings</label>
+									<div class="col-md-7">
+										<input type="number" ng-model="ctrl.diaryEntry.servings" name="servings"
+											class="name form-control input-sm"
+											placeholder="Enter number of servings" 
+											ng-pattern="/^[0-9]+$/"
+											min="1" 
+											required="0" />
+										<div class="has-error" ng-show="addDiaryEntryForm.$dirty">
+											<span ng-show="addDiaryEntryForm.servings.$error.required">This
+												is a required field. </span>
+											<span ng-show="addDiaryEntryForm.servings.$error.min">Minimum
+												amount is 1. </span>
+											<span ng-show="addDiaryEntryForm.servings.$error.pattern">Must be a positive
+												integer greater than or equal to 1. </span>
+										</div>
+									</div>
+								</div>
+							</div>
+							
+							<!-- Form for entering calories per serving; TODO: proper form validation -->
+							<div class="row">
+								<div class="form-group col-md-12">
+									<label class="col-md-2 control-lable" for="file">Calories per serving</label>
+									<div class="col-md-7">
+										<input type="number" ng-model="ctrl.diaryEntry.caloriesPerServing" name="caloriesPerServing"
+											class="name form-control input-sm"
+											placeholder="Enter calories per serving"
+											ng-pattern="/^[0-9]+$/"
+											min="0" 
+											required="0" />
+										<div class="has-error" ng-show="addDiaryEntryForm.$dirty">
+											<span ng-show="addDiaryEntryForm.caloriesPerServing.$error.required">This
+												is a required field. </span>
+											<span ng-show="addDiaryEntryForm.caloriesPerServing.$error.min">Minimum
+												amount is 0. </span>
+											<span ng-show="addDiaryEntryForm.caloriesPerServing.$error.pattern">Must be a positive
+												integer greater than or equal to 0. </span>
+										</div>
+									</div>
+								</div>
+							</div>
+							
+							<!-- Form for entering fat per serving; TODO: proper form validation -->
+							<div class="row">
+								<div class="form-group col-md-12">
+									<label class="col-md-2 control-lable" for="file">Amount fat per serving (g)</label>
+									<div class="col-md-7">
+										<input type="number" ng-model="ctrl.diaryEntry.fat" name="fat"
+											class="name form-control input-sm"
+											placeholder="Enter fat per serving (g)"
+											ng-pattern="/^[0-9]+$/"
+											min="0" 
+											required="0" />
+										<div class="has-error" ng-show="addDiaryEntryForm.$dirty">
+											<span ng-show="addDiaryEntryForm.fat.$error.required">This
+												is a required field. </span>
+											<span ng-show="addDiaryEntryForm.fat.$error.min">Minimum
+												amount is 0. </span>
+											<span ng-show="addDiaryEntryForm.fat.$error.pattern">Must be a positive
+												integer greater than or equal to 0. </span>
+										</div>
+									</div>
+								</div>
+							</div>
+							
+							<!-- Form for entering sodium per serving; TODO: proper form validation -->
+							<div class="row">
+								<div class="form-group col-md-12">
+									<label class="col-md-2 control-lable" for="file">Amount sodium per serving (mg)</label>
+									<div class="col-md-7">
+										<input type="number" ng-model="ctrl.diaryEntry.sodium" name="sodium"
+											class="name form-control input-sm"
+											placeholder="Enter sodium per serving (mg)"
+											ng-pattern="/^[0-9]+$/"
+											min="0" 
+											required="0" />
+										<div class="has-error" ng-show="addDiaryEntryForm.$dirty">
+											<span ng-show="addDiaryEntryForm.sodium.$error.required">This
+												is a required field. </span>
+											<span ng-show="addDiaryEntryForm.sodium.$error.min">Minimum
+												amount is 0. </span>
+											<span ng-show="addDiaryEntryForm.sodium.$error.pattern">Must be a positive
+												integer greater than or equal to 0. </span>
+										</div>
+									</div>
+								</div>
+							</div>
+							
+							<!-- Form for entering carbs per serving; TODO: proper form validation -->
+							<div class="row">
+								<div class="form-group col-md-12">
+									<label class="col-md-2 control-lable" for="file">Amount carbs per serving (g)</label>
+									<div class="col-md-7">
+										<input type="number" ng-model="ctrl.diaryEntry.carbs" name="carbs"
+											class="name form-control input-sm"
+											placeholder="Enter carbs per serving (mg)"
+											ng-pattern="/^[0-9]+$/"
+											min="0" 
+											required="0" />
+										<div class="has-error" ng-show="addDiaryEntryForm.$dirty">
+											<span ng-show="addDiaryEntryForm.carbs.$error.required">This
+												is a required field. </span>
+											<span ng-show="addDiaryEntryForm.carbs.$error.min">Minimum
+												amount is 0. </span>
+											<span ng-show="addDiaryEntryForm.carbs.$error.pattern">Must be a positive
+												integer greater than or equal to 0. </span>
+										</div>
+									</div>
+								</div>
+							</div>
+							
+							<!-- Form for entering sugar per serving; TODO: proper form validation -->
+							<div class="row">
+								<div class="form-group col-md-12">
+									<label class="col-md-2 control-lable" for="file">Amount sugar per serving (g)</label>
+									<div class="col-md-7">
+										<input type="number" ng-model="ctrl.diaryEntry.sugar" name="sugar"
+											class="name form-control input-sm"
+											placeholder="Enter sugar per serving (mg)"
+											ng-pattern="/^[0-9]+$/"
+											min="0" 
+											required="0" />
+										<div class="has-error" ng-show="addDiaryEntryForm.$dirty">
+											<span ng-show="addDiaryEntryForm.sugar.$error.required">This
+												is a required field. </span>
+											<span ng-show="addDiaryEntryForm.sugar.$error.min">Minimum
+												amount is 0. </span>
+											<span ng-show="addDiaryEntryForm.sugar.$error.pattern">Must be a positive
+												integer greater than or equal to 0. </span>
+										</div>
+									</div>
+								</div>
+							</div>
+							
+							<!-- Form for entering fiber per serving; TODO: proper form validation -->
+							<div class="row">
+								<div class="form-group col-md-12">
+									<label class="col-md-2 control-lable" for="file">Amount fiber per serving (g)</label>
+									<div class="col-md-7">
+										<input type="number" ng-model="ctrl.diaryEntry.fiber" name="fiber"
+											class="name form-control input-sm"
+											placeholder="Enter fiber per serving (mg)"
+											ng-pattern="/^[0-9]+$/"
+											min="0" 
+											required="0" />
+										<div class="has-error" ng-show="addDiaryEntryForm.$dirty">
+											<span ng-show="addDiaryEntryForm.fiber.$error.required">This
+												is a required field. </span>
+											<span ng-show="addDiaryEntryForm.fiber.$error.min">Minimum
+												amount is 0. </span>
+											<span ng-show="addDiaryEntryForm.fiber.$error.pattern">Must be a positive
+												integer greater than or equal to 0. </span>
+										</div>
+									</div>
+								</div>
+							</div>
+							
+							<!-- Form for entering protein per serving; TODO: proper form validation -->
+							<div class="row">
+								<div class="form-group col-md-12">
+									<label class="col-md-2 control-lable" for="file">Amount protein per serving (g)</label>
+									<div class="col-md-7">
+										<input type="number" ng-model="ctrl.diaryEntry.protein" name="protein"
+											class="name form-control input-sm"
+											placeholder="Enter protein per serving (mg)"
+											ng-pattern="/^[0-9]+$/"
+											min="0" 
+											required="0" />
+										<div class="has-error" ng-show="addDiaryEntryForm.$dirty">
+											<span ng-show="addDiaryEntryForm.protein.$error.required">This
+												is a required field. </span>
+											<span ng-show="addDiaryEntryForm.protein.$error.min">Minimum
+												amount is 0. </span>
+											<span ng-show="addDiaryEntryForm.protein.$error.pattern">Must be a positive
+												integer greater than or equal to 0. </span>
+										</div>
+									</div>
+								</div>
+							</div>
+							
+							<div class="row">
+								<div class="form-actions col-md-12">
+									<input type="submit" value="Submit"
+										class="btn btn-primary btn-sm"
+										ng-disabled="addDiaryEntryForm.$invalid" />
+									<button type="button" ng-click="ctrl.reset()"
+										class="btn btn-warning btn-sm"
+										ng-disabled="addDiaryEntryForm.$pristine">Reset Form</button>
+								</div>
+							</div>
+							
+						</form>
+					</div>
+					
+					<div ng-show="success">Diary Entry Added</div>
+					<div ng-show="failure">Error while adding diary entry.</div>
+					
+				</div>
+			</div>
+		</div>
+		
+		<!-- Navigate back to patient landing page -->
+		<a href="/iTrust2/patient/index">Patient Home Page</a>
+		
+	</div>
+</body>
+</html>

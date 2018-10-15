@@ -18,7 +18,7 @@ import edu.ncsu.csc.itrust2.utils.LoggerUtil;
  */
 @Controller
 public class PatientController {
-	
+
     /**
      * Retrieves the page for the Patient to request an Appointment
      *
@@ -86,10 +86,8 @@ public class PatientController {
         return "/patient/demographics/editDemographics";
     }
 
-
     /**
-     * Returns the page for a patient to view Personal
-     * Representatives
+     * Returns the page for a patient to view Personal Representatives
      *
      * @return Page to display to the user
      */
@@ -98,7 +96,7 @@ public class PatientController {
     public String viewPersonalReps () {
         return "/patient/personalRepresentative/personalRepresentatives";
     }
-    
+
     /**
      * Create a page for the patient to view all diagnoses
      *
@@ -112,5 +110,17 @@ public class PatientController {
         return "/patient/officeVisit/viewDiagnoses";
     }
 
+    /**
+     * Allows patients to navigate to their food diary page
+     *
+     * @param model
+     *            data for the front end
+     * @return The page for the patient to view their food diary
+     */
+    @GetMapping ( value = "/patient/foodDiary/myFoodDiary" )
+    @PreAuthorize ( "hasRole('ROLE_PATIENT')" )
+    public String foodDiary ( final Model model ) {
+        return "patient/foodDiary/myFoodDiary";
+    }
 
 }

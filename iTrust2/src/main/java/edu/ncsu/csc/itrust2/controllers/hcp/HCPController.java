@@ -61,10 +61,10 @@ public class HCPController {
     public String personalReps () {
         return "/hcp/personalRepresentatives";
     }
-    
+
     /**
      * Returns the ER for the given model
-     * 
+     *
      * @param model
      *            model to check
      * @return role
@@ -74,7 +74,7 @@ public class HCPController {
     public String emergencyRecords ( final Model model ) {
         return "personnel/records";
     }
-    
+
     /**
      * Method responsible for HCP's Accept/Reject requested appointment
      * functionality. This prepares the page.
@@ -87,6 +87,19 @@ public class HCPController {
     @PreAuthorize ( "hasRole('ROLE_HCP')" )
     public String requestAppointmentForm ( final Model model ) {
         return "hcp/appointmentRequests";
+    }
+
+    /**
+     * Method responsible for HCP's food diary directory functionality
+     *
+     * @param model
+     *            Data for the front end
+     * @return The page to display to the user
+     */
+    @GetMapping ( "/hcp/foodDiaryDirectory" )
+    @PreAuthorize ( "hasRole('ROLE_HCP')" )
+    public String foodDiaryDirectory ( final Model model ) {
+        return "hcp/foodDiaryDirectory";
     }
 
 }

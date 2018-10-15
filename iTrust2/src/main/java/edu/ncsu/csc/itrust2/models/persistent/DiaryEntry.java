@@ -3,6 +3,7 @@ package edu.ncsu.csc.itrust2.models.persistent;
 import java.util.Calendar;
 import java.util.List;
 
+import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
@@ -10,6 +11,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.criterion.Criterion;
@@ -19,12 +21,15 @@ import edu.ncsu.csc.itrust2.models.enums.Meal;
 import edu.ncsu.csc.itrust2.models.enums.Role;
 
 /**
- * Diary Entry object. Only patients can create and edit diary entries, HCP's
- * can only view patient diary entries.
- *
- * @author Jonathan Oh modify by shuzheng Wang in 10/3
+ * Diary Entry object. Only patients can create and edit diary entries,
+ * HCP's can only view patient diary entries.
+ * 
+ * @author Jonathan Oh
+ * @author shuzheng Wang
  *
  */
+@Entity
+@Table ( name = "DiaryEntry" )
 public class DiaryEntry extends DomainObject<DiaryEntry> {
 
     /**
@@ -52,6 +57,16 @@ public class DiaryEntry extends DomainObject<DiaryEntry> {
         return getWhere( eqList( "patient", User.getByNameAndRole( patientName, Role.ROLE_PATIENT ) ) );
     }
 
+    /**
+     * Retrieves all food diary entries for the HCP provided.
+     *
+     * @param patientName
+     *            Name of the patient
+     * @return All of their food diary entries
+     */
+    public static List<DiaryEntry> getFoodDiaryEntriesForHCP ( final String patientName ) {
+        return getWhere( eqList( "patient", User.getByNameAndRole( patientName, Role.ROLE_PATIENT ) ) );
+    }
     /**
      * Retrieve an diary entry by its numerical ID.
      *
@@ -84,108 +99,110 @@ public class DiaryEntry extends DomainObject<DiaryEntry> {
     /** type of meal: Breakfast, Lunch, Dinner. can have multiple. */
     @NotNull
     @Enumerated ( EnumType.STRING )
-    private Meal     meal;
 
-    /** date the entry was logged. mm/dd/yyyy */
-    private Calendar date;
-    /** name of the entry */
-    private String   name;
-    /** number of servings */
-    private int      servings;
-    /** number of calories */
-    private int      calories;
-    /** grams of fat per serving */
-    private int      fatGrams;
-    /** milligrams of sodium per serving */
-    private int      sodium;
-    /** grams of carbs per serving */
-    private int      carbs;
-    /** grams of sugars per serving */
-    private int      sugars;
-    /** grams of fiber per serving */
-    private int      fibers;
-    /** grams of protein per serving */
-    private int      protein;
+    private Meal meal;
 
-    /**
-     * Generic constructor to create a quick entry with 0 for the fields.
-     */
-    public DiaryEntry () {
-        this.date = Calendar.getInstance();
-        this.meal = Meal.BREAKFAST;
-        this.name = "name";
-        this.servings = 0;
-        this.calories = 0;
-        this.fatGrams = 0;
-        this.sodium = 0;
-        this.carbs = 0;
-        this.sugars = 0;
-        this.fibers = 0;
-        this.protein = 0;
-    }
+	/** date the entry was logged. mm/dd/yyyy */
+    @NotNull
+    private Calendar date ;
+	/** name of the entry */
+    @NotNull
+	private String name;
+	/** number of servings */
+    @NotNull
+	private int servings;
+	/** number of calories */
+    @NotNull
+	private int calories;
+	/** grams of fat per serving */
+    @NotNull
+	private int fatGrams;
+	/** milligrams of sodium per serving */
+    @NotNull
+	private int sodium;
+	/** grams of carbs per serving */
+    @NotNull
+	private int carbs;
+	/** grams of sugars per serving */
+    @NotNull
+	private int sugars;
+	/** grams of fiber per serving */
+    @NotNull
+	private int fibers;
+	/** grams of protein per serving */
+    @NotNull    
+	private int protein;
 
-    /**
-     * Constructor to create a diary entry from provided parameters.
-     *
-     * @param date
-     *            date of meal
-     * @param meal
-     *            type of meal
-     * @param name
-     *            name of entry
-     * @param servings
-     *            number of servings/serving
-     * @param calories
-     *            number of calories/serving
-     * @param fatGrams
-     *            grams of fat/serving
-     * @param sodium
-     *            MILLIGRAMS of sodium/serving
-     * @param carbs
-     *            grams of carbs/serving
-     * @param sugars
-     *            grams of sugars/serving
-     * @param fibers
-     *            grams of fibers/serving
-     * @param protein
-     *            grams of protein/serving
-     */
-    public DiaryEntry ( final Calendar date, final Meal meal, final String name, final int servings, final int calories,
-            final int fatGrams, final int sodium, final int carbs, final int sugars, final int fibers,
-            final int protein ) {
-        this.date = date;
-        this.meal = meal;
-        this.name = "name";
-        this.name = name;
-        this.servings = servings;
-        this.calories = calories;
-        this.fatGrams = fatGrams;
-        this.sodium = sodium;
-        this.carbs = carbs;
-        this.sugars = sugars;
-        this.fibers = fibers;
-        this.protein = protein;
-    }
+	/** Generic constructor to create a quick entry with
+	 * 0 for the fields. this should never be used
+	 */
+	public DiaryEntry() {
+		this.date = Calendar.getInstance();
+		this.meal = Meal.BREAKFAST;
+		this.name = "name";
+		this.servings = 0;
+		this.calories = 0;
+		this.fatGrams = 0;
+		this.sodium = 0;
+		this.carbs = 0;
+		this.sugars = 0;
+		this.fibers = 0;
+		this.protein = 0;
+		this.patient = new User();
+	}
 
-    /**
-     * Constructor to create a DiaryEntry from a DiaryEntryForm
-     *
-     * @param form
-     *            DiaryEntryForm object to create a DiaryEntry from
-     */
-    public DiaryEntry ( final DiaryEntryForm form ) {
-        this.date = form.getEntryDate();
-        this.meal = form.getEntryMeal();
-        this.name = form.getEntryName();
-        this.servings = form.getEntryServings();
-        this.calories = form.getEntryCalories();
-        this.fatGrams = form.getEntryFatGrams();
-        this.sodium = form.getEntrySodium();
-        this.carbs = form.getEntryCarbs();
-        this.sugars = form.getEntrySugars();
-        this.fibers = form.getEntryFibers();
-        this.protein = form.getEntryProtein();
-    }
+	/**
+	 * Constructor to create a diary entry from provided parameters.
+	 * 
+	 * @param date date of meal
+	 * @param meal type of meal
+	 * @param name name of entry
+	 * @param servings number of servings/serving
+	 * @param calories number of calories/serving
+	 * @param fatGrams grams of fat/serving
+	 * @param sodium MILLIGRAMS of sodium/serving
+	 * @param carbs grams of carbs/serving
+	 * @param sugars grams of sugars/serving
+	 * @param fibers grams of fibers/serving
+	 * @param protein grams of protein/serving
+	 */
+	public DiaryEntry(Calendar date, Meal meal, String name, int servings,
+			int calories, int fatGrams, int sodium, int carbs, int sugars,
+			int fibers, int protein, User patient) {
+		this.date = date;
+		this.meal = meal;
+		this.name = "name";
+		this.name = name;
+		this.servings = servings;
+		this.calories = calories;
+		this.fatGrams = fatGrams;
+		this.sodium = sodium;
+		this.carbs = carbs;
+		this.sugars = sugars;
+		this.fibers = fibers;
+		this.protein = protein;
+		this.patient = patient;
+	}
+
+	/**
+	 * Constructor to create a DiaryEntry from a DiaryEntryForm
+	 * @param form DiaryEntryForm object to create a DiaryEntry from
+	 */
+	public DiaryEntry(DiaryEntryForm form) {
+		this.date = form.getEntryDate();
+		this.meal = form.getEntryMeal();
+		this.name = form.getEntryName();
+		this.servings = form.getEntryServings();
+		this.calories = form.getEntryCalories();
+		this.fatGrams = form.getEntryFatGrams();
+		this.sodium = form.getEntrySodium();
+		this.carbs = form.getEntryCarbs();
+		this.sugars = form.getEntrySugars();
+		this.fibers = form.getEntryFibers();
+		this.protein = form.getEntryProtein();
+		setPatient( User.getByNameAndRole( form.getEntryPatient(), Role.ROLE_PATIENT ) );
+	}
+
 
     /**
      * The Patient who is associated with this entry form

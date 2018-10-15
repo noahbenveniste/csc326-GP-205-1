@@ -11,7 +11,7 @@ import edu.ncsu.csc.itrust2.models.enums.Meal;
 import edu.ncsu.csc.itrust2.models.enums.Role;
 import edu.ncsu.csc.itrust2.models.persistent.DiaryEntry;
 import edu.ncsu.csc.itrust2.models.persistent.User;
-
+ 
 public class DiaryEntryTest {
 
 	@Test
@@ -24,17 +24,17 @@ public class DiaryEntryTest {
 		entry.setServings(1); entry.setCalories(1); entry.setFatGrams(1); entry.setSodium(1);
 		entry.setCarbs(1); entry.setSugars(1); entry.setFibers(1); entry.setProtein(1);
 		entry.setId(id); 
-		
+		User user = new User("patient", "password", Role.ROLE_PATIENT, 1);
+	    entry.setPatient( User.getByName( "patient" ) );
 		//the second diary entry
 		DiaryEntry entry2 = new DiaryEntry(date, Meal.BREAKFAST, "name", 1,
-			1, 1, 1, 1, 1, 1, 1);
+			1, 1, 1, 1, 1, 1, 1, user);
 		
 		//the third diary entry
-		DiaryEntryForm form = new DiaryEntryForm();
+		DiaryEntryForm form = new DiaryEntryForm(entry);
 		DiaryEntry entry3 = new DiaryEntry(form);
 		
 		//testing set patient, get patient
-		User user = new User("patient", "password", Role.ROLE_PATIENT, 1);
 		entry2.setPatient(user);
 		assertEquals( "patient", entry2.getPatient().getUsername() );
 		

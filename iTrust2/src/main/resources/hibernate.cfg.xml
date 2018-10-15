@@ -38,6 +38,7 @@
 		<mapping class="edu.ncsu.csc.itrust2.models.persistent.LoginBan"/>
 		<mapping class="edu.ncsu.csc.itrust2.models.persistent.LabProcedure"/>
 		<mapping class="edu.ncsu.csc.itrust2.models.persistent.LOINC"/>
+		<mapping class="edu.ncsu.csc.itrust2.models.persistent.DiaryEntry"/>
 
 	</session-factory>
 </hibernate-configuration>

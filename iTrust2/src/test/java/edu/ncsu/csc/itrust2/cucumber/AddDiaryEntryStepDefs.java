@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 import java.util.List;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
 
 import cucumber.api.java.en.And;
@@ -27,7 +28,7 @@ public class AddDiaryEntryStepDefs extends CucumberTest {
      * Patient is logged in and viewing food diary
      */
     @Given ( "^there are no diary entries for (.+)$" )
-    public void noFoodDiary ( String patient ) {
+    public void noFoodDiary ( final String patient ) {
         setup();
         driver.get( BASE_URL );
         DiaryEntry.deleteAll( DiaryEntry.class );
@@ -37,28 +38,31 @@ public class AddDiaryEntryStepDefs extends CucumberTest {
     /**
      * Patient login and opens their food diary
      */
-    @When ( "^I log in as (.+) and navigate to the diary entry page$" )
-    public void loginAndOpenFoodDiary ( String user ) {
-        final WebElement username = driver.findElement( By.name( "username" ) );
-        username.clear();
-        username.sendKeys( user );
-        final WebElement password = driver.findElement( By.name( "password" ) );
-        password.clear();
-        password.sendKeys( "123456" );
-        final WebElement submit = driver.findElement( By.className( "btn" ) );
-        submit.click();
-        final WebElement dropdown = driver.findElement( By.id( "patient-dropdown" ) );
-        dropdown.click();
-        final WebElement diaryBtn = driver.findElement( By.id( "fooddiary" ) );
-        diaryBtn.click();
+    @When ( "I navigate to the diary entry page" )
+    public void loginAndOpenFoodDiary () {
+        /*
+         * final WebElement username = driver.findElement( By.name( "username" )
+         * ); username.clear(); username.sendKeys( user ); final WebElement
+         * password = driver.findElement( By.name( "password" ) );
+         * password.clear(); password.sendKeys( "123456" ); final WebElement
+         * submit = driver.findElement( By.className( "btn" ) ); submit.click();
+         * final WebElement dropdown = driver.findElement( By.id(
+         * "patient-dropdown" ).cssSelector( "dropdown-toggle" ) );
+         * dropdown.click(); final WebElement diaryBtn = driver.findElement(
+         * By.id( "fooddiary" ) ); diaryBtn.click();
+         */
+
+        ( (JavascriptExecutor) driver ).executeScript( "document.getElementById('fooddiary').click();" );
+        assertEquals( BASE_URL + "/patient/foodDiary/myFoodDiary", driver.getCurrentUrl() );
     }
 
     /**
      * Submits a valid diary entry
      */
     @When ( "^I submit an entry on (.+) that I ate (.+) servings of (.+) for (.+) that had: (.+) calories, (.+)g fat, (.+)mg sodium, (.+)g carbs, (.+)g sugar, (.+)g fiber and (.+)g protein.$" )
-    public void fillDiaryFields ( String date, String name, String servings, String meal, String fat, String sodium,
-            String carbs, String sugar, String fiber, String protein ) {
+    public void fillDiaryFields ( final String date, final String name, final String servings, final String meal,
+            final String fat, final String sodium, final String carbs, final String sugar, final String fiber,
+            final String protein ) {
         final WebElement dateEle = driver.findElement( By.name( "date" ) );
         dateEle.clear();
         dateEle.sendKeys( date );

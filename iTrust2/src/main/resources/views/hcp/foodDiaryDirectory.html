@@ -92,11 +92,11 @@
 					return mockDiaryEntries;
 				}
 				
-				$httpBackend.whenRoute('GET', REST_SERVICE_URI + '/:name')
+				/*$httpBackend.whenRoute('GET', REST_SERVICE_URI + '/:name')
 				   .respond(function(method, url, data, headers, params) {
 				   return [200, self.genDiaryEntries(params.name)];
 				});
-				
+				*/
 				// Services
 				var factory = {
 					getEntriesNameService: getEntriesNameService

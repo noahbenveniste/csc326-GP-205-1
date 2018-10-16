@@ -1,6 +1,5 @@
 package edu.ncsu.csc.itrust2.apitest;
 
-
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -26,12 +25,10 @@ import edu.ncsu.csc.itrust2.forms.admin.UserForm;
 import edu.ncsu.csc.itrust2.forms.patient.DiaryEntryForm;
 import edu.ncsu.csc.itrust2.models.enums.Meal;
 import edu.ncsu.csc.itrust2.models.enums.Role;
-import edu.ncsu.csc.itrust2.models.persistent.AppointmentRequest;
-import edu.ncsu.csc.itrust2.models.persistent.DiaryEntry;
 import edu.ncsu.csc.itrust2.mvc.config.WebMvcConfiguration;
 
 /**
- * Test for the API functionality for interacting with food diary 
+ * Test for the API functionality for interacting with food diary
  *
  * @author Shuzheng Wang
  *
@@ -53,6 +50,7 @@ public class APIFoodDiaryTest {
     public void setup () {
         mvc = MockMvcBuilders.webAppContextSetup( context ).build();
     }
+
     /**
      * Tests APi Food dairy controller handle the bad request
      *
@@ -82,7 +80,8 @@ public class APIFoodDiaryTest {
                 .content( TestUtils.asJsonString( entry ) ) ).andExpect( status().isBadRequest() );
 
         mvc.perform( delete( "/api/v1/diaryentries" ) );
-    }    
+    }
+
     /**
      * Tests APi Food dairy controller
      *
@@ -106,30 +105,41 @@ public class APIFoodDiaryTest {
         mvc.perform( delete( "/api/v1/diaryentries" ) );
 
         final DiaryEntryForm entry = new DiaryEntryForm();
-        entry.setEntryDate( Calendar.getInstance()); entry.setEntryMeal(Meal.BREAKFAST); entry.setEntryName("name");
-		entry.setEntryServings(1); entry.setEntryCalories(1); entry.setEntryFatGrams(1); entry.setEntrySodium(1);
-		entry.setEntryCarbs(1); entry.setEntrySugars(1); entry.setEntryFibers(1); entry.setEntryProtein(1);
-		entry.setEntryPatient("patient");
+        entry.setDate( Calendar.getInstance() );
+        entry.setMeal( Meal.BREAKFAST );
+        entry.setName( "name" );
+        entry.setServings( 1 );
+        entry.setCalories( 1 );
+        entry.setFatGrams( 1 );
+        entry.setSodium( 1 );
+        entry.setCarbs( 1 );
+        entry.setSugars( 1 );
+        entry.setFibers( 1 );
+        entry.setProtein( 1 );
+        entry.setPatient( "patient" );
 
         /* Create the request */
         mvc.perform( post( "/api/v1/diaryentries" ).contentType( MediaType.APPLICATION_JSON )
                 .content( TestUtils.asJsonString( entry ) ) );
 
-        mvc.perform( get( "/api/v1/diaryentrie" ) )
+        mvc.perform( get( "/api/v1/diaryentries" ) )
                 .andExpect( content().contentType( MediaType.APPLICATION_JSON_UTF8_VALUE ) );
-        
+
         mvc.perform( get( "/api/v1/diaryentries/" + patient.getUsername() ) )
-        .andExpect( content().contentType( MediaType.APPLICATION_JSON_UTF8_VALUE ) );
-        
+                .andExpect( content().contentType( MediaType.APPLICATION_JSON_UTF8_VALUE ) );
+
         mvc.perform( get( "/api/v1/diaryentries/" + "someBody" ) );
-//        /*
-//         * We need the ID of the diary entry that actually got _saved_
-//         * when calling the API above. This will get it
-//         */
-//        final Long id = DiaryEntry.getFoodDiaryEntriesForPatient( patient.getUsername() ).get( 0 ).getId();
-//        
-//        mvc.perform( get( "/api/v1/diaryentries/" + id ) ).andExpect( status().isOk() )
-//        .andExpect( content().contentType( MediaType.APPLICATION_JSON_UTF8_VALUE ) );
+        // /*
+        // * We need the ID of the diary entry that actually got _saved_
+        // * when calling the API above. This will get it
+        // */
+        // final Long id = DiaryEntry.getFoodDiaryEntriesForPatient(
+        // patient.getUsername() ).get( 0 ).getId();
+        //
+        // mvc.perform( get( "/api/v1/diaryentries/" + id ) ).andExpect(
+        // status().isOk() )
+        // .andExpect( content().contentType(
+        // MediaType.APPLICATION_JSON_UTF8_VALUE ) );
 
     }
 }

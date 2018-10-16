@@ -213,11 +213,13 @@
 								}
 								self.diaryEntryMaster.push(totals_row);
 								
+								/*
 								// Get the user's name
 								if ( self.diaryEntryMaster.length != 0 ) {
 									$scope.patientName = self.diaryEntryMaster[0].patient.username;
 								}
 								
+								*/
 							}
 							
 							// Get the user's name
@@ -237,7 +239,7 @@
 					// Convert the js Date object into something that can be converted by the backend
 					var old = entry.date;
 					entry.date = { 'year': old.getFullYear(), 'month': old.getMonth(), 'dayOfMonth': old.getDate(), 'hourOfDay': old.getHours(), 'minute': old.getMinutes(), 'second': old.getSeconds() };
-					entry.patient = $scope.patientName;
+					// entry.patient = $scope.patientName;
 					diaryService.addEntryService(entry)
 						.then(getEntries,
 						function(errResponse) {

@@ -91,7 +91,10 @@
 					}
 					return mockDiaryEntries;
 				}
-				
+
+				$httpBackend.when("GET", function(url) {
+					return url.startsWith(REST_SERVICE_URI);
+				}).passThrough();
 				/*$httpBackend.whenRoute('GET', REST_SERVICE_URI + '/:name')
 				   .respond(function(method, url, data, headers, params) {
 				   return [200, self.genDiaryEntries(params.name)];
@@ -155,7 +158,7 @@
 					};
 					var totals_row = totals_row_temp();
 					for (var i = 0; i < entries.length; i++) {
-						if (dt != null && dt < entries[i].date.getTime()) {
+						if (dt != null && (dt < entries[i].date.getTime() || entries.length == 0)) {
 							self.diaryEntryMaster.push(totals_row);
 							totals_row = totals_row_temp();
 						}
@@ -173,10 +176,11 @@
 						self.diaryEntryMaster.push(entries[i]);
 						dt = entries[i].date.getTime();
 					}
-					self.diaryEntryMaster.push(totals_row);
 					
 					// Get the user's name
-					$scope.patientName = self.diaryEntryMaster[0].patient.username;
+					if ( self.diaryEntryMaster.length != 0 ) {
+						$scope.patientName = self.diaryEntryMaster[0].patient.username;
+					}
 
 					// Calculate nutrient totals
 				}

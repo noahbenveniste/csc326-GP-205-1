@@ -193,7 +193,7 @@
 								};
 								var totals_row = totals_row_temp();
 								for (var i = 0; i < entries.length; i++) {
-									if (dt != null && dt < entries[i].date.getTime()) {
+									if (dt != null && (dt < entries[i].date.getTime() || entries.length == 0)) {
 										self.diaryEntryMaster.push(totals_row);
 										totals_row = totals_row_temp();
 									}
@@ -214,7 +214,9 @@
 								self.diaryEntryMaster.push(totals_row);
 								
 								// Get the user's name
-								$scope.patientName = self.diaryEntryMaster[0].patient.username;
+								if ( self.diaryEntryMaster.length != 0 ) {
+									$scope.patientName = self.diaryEntryMaster[0].patient.username;
+								}
 								
 							}
 							

@@ -88,7 +88,7 @@
 						},
 						function(errResponse) {
 							console.log(errResponse);
-							console.error('Error while getting diary entries (getEntriesService)')
+							console.error('Error while getting diary entries (getEntriesService)');
 							deferred.reject(errResponse);
 						}
 					);
@@ -158,8 +158,9 @@
 						function(data) {
 							
 							if (data.length == 0) {
-								// Need some way to display that there are no entries
+								$scope.patientName = "You have no food diary entries.";
 							} else {
+								$scope.patientName = "My Food Diary";
 								updateDiaryTable(data);
 							}
 							
@@ -183,7 +184,7 @@
 									entries[i].date = new Date(entries[i].date.year, entries[i].date.month, entries[i].date.dayOfMonth);
 								}
 								// sort entries by date so they appear in order
-								entries.sort(function(a, b){return a.date.getTime() > b.date.getTime(); });
+								entries.sort(function(a, b){return b.date.getTime() - a.date.getTime()});
 								
 								// Update the master list of diary entries with daily totals
 								self.diaryEntryMaster = [];
@@ -197,13 +198,11 @@
 									};
 								};
 								var totals_row = totals_row_temp();
+								
 								for (var i = 0; i < entries.length; i++) {
-									if (dt != null && (dt < entries[i].date.getTime() || entries.length == 0)) {
-										self.diaryEntryMaster.push(totals_row);
-										totals_row = totals_row_temp();
-									}
+									
 									// calculate totals of diary entries. must multiply by servings
-									var srv = entries[i].servings
+									var srv = entries[i].servings;
 									totals_row.servings += srv;
 									totals_row.calories += srv * entries[i].calories;
 									totals_row.fatGrams += srv * entries[i].fatGrams;
@@ -214,21 +213,16 @@
 									totals_row.protein += srv * entries[i].protein;
 									
 									self.diaryEntryMaster.push(entries[i]);
-									dt = entries[i].date.getTime();
-								}
-								self.diaryEntryMaster.push(totals_row);
-								
-								/*
-								// Get the user's name
-								if ( self.diaryEntryMaster.length != 0 ) {
-									$scope.patientName = self.diaryEntryMaster[0].patient.username;
+									
+									if (i == entries.length - 1 || entries[i].date.getTime() > entries[i + 1].date.getTime()) {
+										self.diaryEntryMaster.push(totals_row);
+										totals_row = totals_row_temp();
+									}
+									
 								}
 								
-								*/
 							}
-							
-							// Get the user's name
-							//$scope.patientName = self.diaryEntryMaster[0].patient.username;
+
 						},
 						function(errResponse) {
 							console.error('Error while getting diary entries (getEntries)');
@@ -265,7 +259,7 @@
 				}
 				
 				function reset() {
-					self.diaryEntry = {'meal':'', 'date': self.todaysDateNormalized, 'name':'', 'servings':'', 'calories':'', 'fatGrams':'', 'sodium':'', 'carbs':'', 'sugars':'', 'fibers':'', 'protein':'', 'patient': { 'username':'', 'password':'', 'enabled':'', 'role':'' }, 'id':'' };
+					self.diaryEntry = {'meal':'', 'date': self.todaysDateNormalized, 'name':'', 'servings':'', 'calories':'', 'fatGrams':'', 'sodium':'', 'carbs':'', 'sugars':'', 'fibers':'', 'protein':'', 'patient': '', 'id':''};
 				    $scope.addDiaryEntryForm.$setPristine(); //reset Form
 				}
 				

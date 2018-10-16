@@ -16,7 +16,7 @@
 			
 			angular.module('diaryApp').factory('diaryService', ['$http', '$q', '$httpBackend', function( $http, $q, $httpBackend) {
 				
-				var REST_SERVICE_URI = '/iTrust2/api/v1/patientdiaryentries';
+				var REST_SERVICE_URI = '/iTrust2/api/v1/diaryentries';
 				
 				// Initializes data for mock GET request
 				self.mockDiaryEntries = [];
@@ -51,8 +51,11 @@
 					  });
 				}
 				
+				$httpBackend.whenGET(REST_SERVICE_URI).passThrough();
+				$httpBackend.whenPOST(REST_SERVICE_URI).passThrough();
+				
 				// Mock interception of REST api calls. Comment this section out to use real API
-				$httpBackend.whenRoute('GET', REST_SERVICE_URI)
+				/*$httpBackend.whenRoute('GET', REST_SERVICE_URI)
 				   .respond(function(method, url, data, headers, params) {
 				   return [200, self.mockDiaryEntries];
 				});
@@ -65,7 +68,7 @@
 				    // Code to sort the list (Note: this should occur on the backend, this is just for mocking purposes)
 				    
 				    return [201, mockDiaryEntries];
-				});
+				});*/
 				// end mock interception
 				
 				// Services
@@ -84,7 +87,8 @@
 							deferred.resolve(response.data);
 						},
 						function(errResponse) {
-							console.error('Error while getting diary entries (getEntriesService)')
+							console.log(errResponse);
+							console.error('Error while getting diary entries (getEntriesService)');
 							deferred.reject(errResponse);
 						}
 					);
@@ -93,7 +97,9 @@
 				
 				function addEntryService(entry) {
 					var deferred = $q.defer();
-					$http.put(REST_SERVICE_URI, entry)
+					console.log(entry);
+					console.log(JSON.stringify(entry));
+					$http.post(REST_SERVICE_URI, entry)
 						.then(
 						function(response) {
 							deferred.resolve(response.data);
@@ -128,7 +134,7 @@
 														   // Needs to be this way because the calendar widget converts from UTC.
 														   // If this were midnight UTC, it would display the wrong (previous) day
 				
-				self.diaryEntry = {'meal':'', 'date': self.todaysDateNormalized, 'name':'', 'servings':'', 'calories':'', 'fatGrams':'', 'sodium':'', 'carbs':'', 'sugars':'', 'fibers':'', 'protein':'', 'patient': { 'username':'', 'password':'', 'enabled':'', 'role':'' }, 'id':'' };
+				self.diaryEntry = {'meal':'', 'date': self.todaysDateNormalized, 'name':'', 'servings':'', 'calories':'', 'fatGrams':'', 'sodium':'', 'carbs':'', 'sugars':'', 'fibers':'', 'protein':'', 'patient': '', 'id':'' };
 				self.diaryEntryMaster = [];
 				
 				$scope.mealTypes = ['BREAKFAST', 'LUNCH', 'DINNER', 'SNACK'];
@@ -151,7 +157,13 @@
 						.then(
 						function(data) {
 							
-							updateDiaryTable(data);
+							if (data.length == 0) {
+								$scope.patientName = "You have no food diary entries.";
+							} else {
+								$scope.patientName = "My Food Diary";
+								updateDiaryTable(data);
+							}
+							
 							// Loop over the data converting the millisecond univseral date values
 							// into js Date objects
 							/*
@@ -172,7 +184,7 @@
 									entries[i].date = new Date(entries[i].date.year, entries[i].date.month, entries[i].date.dayOfMonth);
 								}
 								// sort entries by date so they appear in order
-								entries.sort(function(a, b){return a.date.getTime() > b.date.getTime(); });
+								entries.sort(function(a, b){return b.date.getTime() - a.date.getTime()});
 								
 								// Update the master list of diary entries with daily totals
 								self.diaryEntryMaster = [];
@@ -186,13 +198,11 @@
 									};
 								};
 								var totals_row = totals_row_temp();
+								
 								for (var i = 0; i < entries.length; i++) {
-									if (dt != null && dt < entries[i].date.getTime()) {
-										self.diaryEntryMaster.push(totals_row);
-										totals_row = totals_row_temp();
-									}
+									
 									// calculate totals of diary entries. must multiply by servings
-									var srv = entries[i].servings
+									var srv = entries[i].servings;
 									totals_row.servings += srv;
 									totals_row.calories += srv * entries[i].calories;
 									totals_row.fatGrams += srv * entries[i].fatGrams;
@@ -203,16 +213,16 @@
 									totals_row.protein += srv * entries[i].protein;
 									
 									self.diaryEntryMaster.push(entries[i]);
-									dt = entries[i].date.getTime();
+									
+									if (i == entries.length - 1 || entries[i].date.getTime() > entries[i + 1].date.getTime()) {
+										self.diaryEntryMaster.push(totals_row);
+										totals_row = totals_row_temp();
+									}
+									
 								}
-								self.diaryEntryMaster.push(totals_row);
 								
-								// Get the user's name
-								$scope.patientName = self.diaryEntryMaster[0].patient.username;
 							}
-							
-							// Get the user's name
-							//$scope.patientName = self.diaryEntryMaster[0].patient.username;
+
 						},
 						function(errResponse) {
 							console.error('Error while getting diary entries (getEntries)');
@@ -228,7 +238,7 @@
 					// Convert the js Date object into something that can be converted by the backend
 					var old = entry.date;
 					entry.date = { 'year': old.getFullYear(), 'month': old.getMonth(), 'dayOfMonth': old.getDate(), 'hourOfDay': old.getHours(), 'minute': old.getMinutes(), 'second': old.getSeconds() };
-					
+					// entry.patient = $scope.patientName;
 					diaryService.addEntryService(entry)
 						.then(getEntries,
 						function(errResponse) {
@@ -249,7 +259,7 @@
 				}
 				
 				function reset() {
-					self.diaryEntry = {'meal':'', 'date': self.todaysDateNormalized, 'name':'', 'servings':'', 'calories':'', 'fatGrams':'', 'sodium':'', 'carbs':'', 'sugars':'', 'fibers':'', 'protein':'', 'patient': { 'username':'', 'password':'', 'enabled':'', 'role':'' }, 'id':'' };
+					self.diaryEntry = {'meal':'', 'date': self.todaysDateNormalized, 'name':'', 'servings':'', 'calories':'', 'fatGrams':'', 'sodium':'', 'carbs':'', 'sugars':'', 'fibers':'', 'protein':'', 'patient': '', 'id':''};
 				    $scope.addDiaryEntryForm.$setPristine(); //reset Form
 				}
 				

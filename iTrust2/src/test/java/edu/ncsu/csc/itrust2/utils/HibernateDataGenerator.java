@@ -54,6 +54,8 @@ public class HibernateDataGenerator {
         refreshDB();
         generateUsers();
 
+        System.out.println( "Done!" );
+
         System.exit( 0 );
         return;
     }

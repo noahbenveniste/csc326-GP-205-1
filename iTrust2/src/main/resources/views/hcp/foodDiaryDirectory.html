@@ -91,12 +91,15 @@
 					}
 					return mockDiaryEntries;
 				}
-				
-				$httpBackend.whenRoute('GET', REST_SERVICE_URI + '/:name')
+
+				$httpBackend.when("GET", function(url) {
+					return url.startsWith(REST_SERVICE_URI);
+				}).passThrough();
+				/*$httpBackend.whenRoute('GET', REST_SERVICE_URI + '/:name')
 				   .respond(function(method, url, data, headers, params) {
 				   return [200, self.genDiaryEntries(params.name)];
 				});
-				
+				*/
 				// Services
 				var factory = {
 					getEntriesNameService: getEntriesNameService
@@ -134,51 +137,64 @@
 				
 				/** Updates the diary entry table for a HCP user or a patient */
 				function updateDiaryTable(entries) {
-
-					// translate DiaryEntry.date to Date object
-					for (var i = 0; i < entries.length; i++) {
-						entries[i].date = new Date(entries[i].date.year, entries[i].date.month, entries[i].date.dayOfMonth);
-					}
-					// sort entries by date so they appear in order
-					entries.sort(function(a, b){return a.date.getTime() > b.date.getTime(); });
 					
-					// Update the master list of diary entries with daily totals
-					self.diaryEntryMaster = [];
-					var dt = null;
-					var entries_and_total = [];
-					var totals_row_temp = function() {
-						return {
-							patientName: "", date: "", mealType: "", name: "Daily Total",
-							servings: 0, calories: 0, fatGrams: 0, sodium: 0, carbs: 0, sugars: 0,
-							fibers: 0, protein: 0, style: "font-weight: bold; background-color: #EEEEEE;"
-						};
-					};
-					var totals_row = totals_row_temp();
-					for (var i = 0; i < entries.length; i++) {
-						if (dt != null && dt < entries[i].date.getTime()) {
-							self.diaryEntryMaster.push(totals_row);
-							totals_row = totals_row_temp();
+					$scope.success = false;
+					$scope.failure = false;
+					
+					if (entries.length == 0) {
+						$scope.failure = true;
+						self.diaryEntryMaster = []; //Clears the entry table
+					} else {
+
+						// translate DiaryEntry.date to Date object
+						for (var i = 0; i < entries.length; i++) {
+							entries[i].date = new Date(entries[i].date.year, entries[i].date.month, entries[i].date.dayOfMonth);
 						}
-						// calculate totals of diary entries. must multiply by servings
-						var srv = entries[i].servings
-						totals_row.servings += srv;
-						totals_row.calories += srv * entries[i].calories;
-						totals_row.fatGrams += srv * entries[i].fatGrams;
-						totals_row.sodium += srv * entries[i].sodium;
-						totals_row.carbs += srv * entries[i].carbs;
-						totals_row.sugars += srv * entries[i].sugars;
-						totals_row.fibers += srv * entries[i].fibers;
-						totals_row.protein += srv * entries[i].protein;
+						// sort entries by date so they appear in order
+						entries.sort(function(a, b){return b.date.getTime() - a.date.getTime()});
 						
-						self.diaryEntryMaster.push(entries[i]);
-						dt = entries[i].date.getTime();
+						// Update the master list of diary entries with daily totals
+						self.diaryEntryMaster = [];
+						var dt = null;
+						var entries_and_total = [];
+						var totals_row_temp = function() {
+							return {
+								patientName: "", date: "", mealType: "", name: "Daily Total",
+								servings: 0, calories: 0, fatGrams: 0, sodium: 0, carbs: 0, sugars: 0,
+								fibers: 0, protein: 0, style: "font-weight: bold; background-color: #EEEEEE;"
+							};
+						};
+						var totals_row = totals_row_temp();
+						
+						for (var i = 0; i < entries.length; i++) {
+							
+							// calculate totals of diary entries. must multiply by servings
+							var srv = entries[i].servings;
+							totals_row.servings += srv;
+							totals_row.calories += srv * entries[i].calories;
+							totals_row.fatGrams += srv * entries[i].fatGrams;
+							totals_row.sodium += srv * entries[i].sodium;
+							totals_row.carbs += srv * entries[i].carbs;
+							totals_row.sugars += srv * entries[i].sugars;
+							totals_row.fibers += srv * entries[i].fibers;
+							totals_row.protein += srv * entries[i].protein;
+							
+							self.diaryEntryMaster.push(entries[i]);
+							
+							if (i == entries.length - 1 || entries[i].date.getTime() > entries[i + 1].date.getTime()) {
+								self.diaryEntryMaster.push(totals_row);
+								totals_row = totals_row_temp();
+							}
+							
+						}
+						
+						// Get the user's name
+						if ( self.diaryEntryMaster.length != 0 ) {
+							$scope.patientName = self.diaryEntryMaster[0].patient.username;
+						}
+						
+						$scope.success = true;
 					}
-					self.diaryEntryMaster.push(totals_row);
-					
-					// Get the user's name
-					$scope.patientName = self.diaryEntryMaster[0].patient.username;
-
-					// Calculate nutrient totals
 				}
 
 				/** Gets diary entries given a patients name */
@@ -190,6 +206,9 @@
 			}]);
 			/*]]>*/
 		</script>
+		
+		<div ng-show="success">Diary Entries Found</div>
+		<div ng-show="failure">No diary entries found for user.</div>
 		
 		<!-- Navigate back to HCP landing page -->
 		<a href="/iTrust2/hcp/index">HCP Home Page</a>

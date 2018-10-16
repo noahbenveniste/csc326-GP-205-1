@@ -49,7 +49,7 @@ public class APIFoodDiaryController extends APIController {
      *
      * @return list of DiaryEntries for the logged in patient
      */
-    @GetMapping ( BASE_PATH + "/diaryentrie" )
+    @GetMapping ( BASE_PATH + "/diaryentries" )
     public List<DiaryEntry> getFoodDiaryEntriesForPatient () {
         LoggerUtil.log( TransactionType.DIARY_ENTRY_ViEWED, LoggerUtil.currentUser(),
                 "patient retrieved diary entries for patient with username " );
@@ -60,7 +60,7 @@ public class APIFoodDiaryController extends APIController {
     /**
      * Retrieves the DiaryEntries for a HCP wanting to access a patient's
      * DiaryEntries
-     * 
+     *
      * @param patientName
      *            name of the patient to get the Diary Entries of
      * @return list of DiaryEntries for the patient with the given name
@@ -131,6 +131,8 @@ public class APIFoodDiaryController extends APIController {
     @PostMapping ( BASE_PATH + "/diaryentries" )
     public ResponseEntity createDiaryEntry ( @RequestBody final DiaryEntryForm entryF ) {
         try {
+            // Gets the currently logged in user
+            entryF.setPatient( LoggerUtil.currentUser() );
             final DiaryEntry entry = new DiaryEntry( entryF );
             if ( null != DiaryEntry.getById( entry.getId() ) ) {
                 return new ResponseEntity(

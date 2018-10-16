@@ -157,7 +157,12 @@
 						.then(
 						function(data) {
 							
-							updateDiaryTable(data);
+							if (data.length == 0) {
+								// Need some way to display that there are no entries
+							} else {
+								updateDiaryTable(data);
+							}
+							
 							// Loop over the data converting the millisecond univseral date values
 							// into js Date objects
 							/*

@@ -7,7 +7,21 @@
 		<div class="panel panel-primary">
 			<!-- Diary entry header -->
 			<div class="panel-heading">
-				<h3>{{patientName}}</h3>
+					<div class="row">
+					<div class="formcontainer">
+						<h3 class="col-md-6">{{patientName}}</h3>
+						<div class="form-group col-md-6">
+							<label class="col-md-3 control-lable" for="file">Date</label>
+							<div class="col-md-6">
+								<input type="date" ng-model="filterDate" name="date"
+									class="name form-control input-sm"
+									placeholder="yyyy-MM-dd"
+									max="{{maxDate | date:'yyyy-MM-dd'}}"
+									required="0" />
+							</div>
+						</div>
+					</div>
+				</div>
 			</div>
 	
 			<div class="panel-body">
@@ -32,7 +46,7 @@
 					</thead>
 					<!-- One diary entry per row, most recent entries at the top -->
 					<tbody>
-						<tr name="diaryTableRow" ng-repeat="e in ctrl.diaryEntryMaster track by $index">
+						<tr name="diaryTableRow" ng-repeat="e in ctrl.diaryEntryMaster | datefilter:e track by $index ">
 							<td style="{{e.style}}" name="dateCell">{{e.date | date:'MM/dd/yyyy'}}</td>
 							<td style="{{e.style}}" name="mealCell">{{e.meal}}</td>
 							<td style="{{e.style}}" name="nameCell">{{e.name}}</td>
@@ -49,5 +63,18 @@
 				</table>
 			</div>
 		</div>
+		<script th:inline="javascript">
+			/* Otherwise Thymeleaf tries to parse Javascript as XML and breaks itself sometimes.  Sigh */
+			/*<![CDATA[*/
+				app.filter('datefilter', ['$scope', function() {
+				  return function ($scope, e) {
+					console.log(e);
+					console.log($scope.dateFilter);
+					return true;
+				  };
+				}]);
+			/*]]>*/
+		</script>
+		
 	</div>
 </html>

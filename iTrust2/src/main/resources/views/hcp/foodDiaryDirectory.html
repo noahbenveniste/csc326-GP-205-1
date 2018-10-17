@@ -134,6 +134,7 @@
 				self.remoteUser = /*[[${#httpServletRequest.remoteUser}]]*/null;
 				$scope.patientName = "...";
 				self.searchPatientName = null;
+				$scope.filterDate = "";
 				
 				/** Updates the diary entry table for a HCP user or a patient */
 				function updateDiaryTable(entries) {
@@ -170,6 +171,7 @@
 							
 							// calculate totals of diary entries. must multiply by servings
 							var srv = entries[i].servings;
+							totals_row.date = entries[i].date;
 							totals_row.servings += srv;
 							totals_row.calories += srv * entries[i].calories;
 							totals_row.fatGrams += srv * entries[i].fatGrams;

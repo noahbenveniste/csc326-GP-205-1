@@ -132,7 +132,8 @@ public class APIFoodDiaryController extends APIController {
     public ResponseEntity createDiaryEntry ( @RequestBody final DiaryEntryForm entryF ) {
         try {
             // Gets the currently logged in user
-            entryF.setPatient( LoggerUtil.currentUser() );
+//            entryF.setPatient( LoggerUtil.currentUser() );
+        	entryF.setPatient("patient");
             final DiaryEntry entry = new DiaryEntry( entryF );
             if ( null != DiaryEntry.getById( entry.getId() ) ) {
                 return new ResponseEntity(

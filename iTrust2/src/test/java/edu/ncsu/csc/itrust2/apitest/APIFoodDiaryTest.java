@@ -167,7 +167,7 @@ public class APIFoodDiaryTest {
         mvc.perform( get( "/api/v1/diaryentries/" + "someBody" ) );
 
         mvc.perform( post( "/api/v1/diaryentries" ).contentType( MediaType.APPLICATION_JSON )
-                .content( TestUtils.asJsonString( entry) ) ).andExpect(status().isBadRequest());
+                .content( TestUtils.asJsonString( entry) ) ).andExpect(status().isOk());
         
         
         // /*

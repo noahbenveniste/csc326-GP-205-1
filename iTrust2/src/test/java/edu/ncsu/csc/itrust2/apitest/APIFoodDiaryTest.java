@@ -25,6 +25,7 @@ import edu.ncsu.csc.itrust2.forms.admin.UserForm;
 import edu.ncsu.csc.itrust2.forms.patient.DiaryEntryForm;
 import edu.ncsu.csc.itrust2.models.enums.Meal;
 import edu.ncsu.csc.itrust2.models.enums.Role;
+import edu.ncsu.csc.itrust2.models.persistent.DiaryEntry;
 import edu.ncsu.csc.itrust2.mvc.config.WebMvcConfiguration;
 
 /**
@@ -78,12 +79,47 @@ public class APIFoodDiaryTest {
         /* Create the request */
         mvc.perform( post( "/api/v1/diaryentries" ).contentType( MediaType.APPLICATION_JSON )
                 .content( TestUtils.asJsonString( entry ) ) ).andExpect( status().isBadRequest() );
+        
+        mvc.perform( delete( "/api/v1/diaryentries" ) );
+        
+        
+    }
+    /**
+     * Tests adding diaries
+     * @throws Exception
+     */
+    @Test
+    public void testAddingEntries () throws Exception {
+    	final UserForm hcp = new UserForm( "hcp", "123456", Role.ROLE_HCP, 1 );
+        mvc.perform( post( "/api/v1/users" ).contentType( MediaType.APPLICATION_JSON )
+                .content( TestUtils.asJsonString( hcp ) ) );
+
+        final UserForm patient = new UserForm( "patient", "123456", Role.ROLE_PATIENT, 1 );
+        mvc.perform( post( "/api/v1/users" ).contentType( MediaType.APPLICATION_JSON )
+                .content( TestUtils.asJsonString( patient ) ) );
 
         mvc.perform( delete( "/api/v1/diaryentries" ) );
+        
+        final DiaryEntryForm entry = new DiaryEntryForm();
+        entry.setDate( Calendar.getInstance() );
+        entry.setMeal( Meal.BREAKFAST );
+        entry.setName( "name" );
+        entry.setServings( 1 );
+        entry.setCalories( 1 );
+        entry.setFatGrams( 1 );
+        entry.setSodium( 1 );
+        entry.setCarbs( 1 );
+        entry.setSugars( 1 );
+        entry.setFibers( 1 );
+        entry.setProtein( 1 );
+        entry.setPatient( "patient" );
+        
+        mvc.perform( post( "/api/v1/diaryentries" ).contentType( MediaType.APPLICATION_JSON )
+                .content( TestUtils.asJsonString( entry ) ) ).andExpect(status().isOk());
     }
 
     /**
-     * Tests APi Food dairy controller
+     * Tests APi Food diary controller
      *
      * @throws Exception
      */
@@ -129,6 +165,11 @@ public class APIFoodDiaryTest {
                 .andExpect( content().contentType( MediaType.APPLICATION_JSON_UTF8_VALUE ) );
 
         mvc.perform( get( "/api/v1/diaryentries/" + "someBody" ) );
+
+        mvc.perform( post( "/api/v1/diaryentries" ).contentType( MediaType.APPLICATION_JSON )
+                .content( TestUtils.asJsonString( entry) ) ).andExpect(status().isBadRequest());
+        
+        
         // /*
         // * We need the ID of the diary entry that actually got _saved_
         // * when calling the API above. This will get it

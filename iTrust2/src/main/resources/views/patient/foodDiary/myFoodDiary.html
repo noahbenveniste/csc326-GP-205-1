@@ -240,7 +240,10 @@
 					entry.date = { 'year': old.getFullYear(), 'month': old.getMonth(), 'dayOfMonth': old.getDate(), 'hourOfDay': old.getHours(), 'minute': old.getMinutes(), 'second': old.getSeconds() };
 					// entry.patient = $scope.patientName;
 					diaryService.addEntryService(entry)
-						.then(getEntries,
+						.then(function(data) {
+							reset();
+							getEntries(data);
+						},
 						function(errResponse) {
 							$scope.failure = true;
 							$scope.success = false;
@@ -255,7 +258,6 @@
 				function submit() {
 					addEntry(self.diaryEntry);
 					console.log('Diary entry added');
-					reset();
 				}
 				
 				function reset() {

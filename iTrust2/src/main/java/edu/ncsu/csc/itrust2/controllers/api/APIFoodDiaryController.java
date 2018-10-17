@@ -61,7 +61,7 @@ public class APIFoodDiaryController extends APIController {
      * Retrieves the DiaryEntries for a HCP wanting to access a patient's
      * DiaryEntries
      *
-     * @param patientName
+     * @param patient_id
      *            name of the patient to get the Diary Entries of
      * @return list of DiaryEntries for the patient with the given name
      */

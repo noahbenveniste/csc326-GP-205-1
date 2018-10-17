@@ -141,7 +141,7 @@ public class DiaryEntryForm {
     /**
      * Get the Entry date of the form
      *
-     * @param entryDate
+     * @param date
      *            the entry date of the form
      */
     public void setDate ( Calendar date ) {
@@ -179,7 +179,7 @@ public class DiaryEntryForm {
     /**
      * set the entry name of the form
      *
-     * @param entryName
+     * @param name
      *            the entry name of the form
      */
     public void setName ( String name ) {
@@ -198,7 +198,7 @@ public class DiaryEntryForm {
     /**
      * set the entry servings form the form
      *
-     * @param entryServings
+     * @param servings
      *            the entry serving of the form
      */
     public void setServings ( int servings ) {
@@ -217,7 +217,7 @@ public class DiaryEntryForm {
     /**
      * set the entry calories of the form
      *
-     * @param entryCalories
+     * @param calories
      *            the entry calories of the form
      */
     public void setCalories ( int calories ) {
@@ -236,7 +236,7 @@ public class DiaryEntryForm {
     /**
      * set the entry fat grams of the form
      *
-     * @param entryFatGrams
+     * @param fatGrams
      *            the entry fat grams of the form
      */
     public void setFatGrams ( int fatGrams ) {
@@ -255,7 +255,7 @@ public class DiaryEntryForm {
     /**
      * set the entry sodium of form
      *
-     * @param entrySodium
+     * @param sodium
      *            the entry sodium of the form
      */
     public void setSodium ( int sodium ) {
@@ -274,7 +274,7 @@ public class DiaryEntryForm {
     /**
      * set the entry carbs
      *
-     * @param entryCarbs
+     * @param carbs
      *            the entry carbs
      */
     public void setCarbs ( int carbs ) {
@@ -293,7 +293,7 @@ public class DiaryEntryForm {
     /**
      * set the entry sugars
      *
-     * @param entrySugars
+     * @param sugars
      *            the entry sugars
      */
     public void setSugars ( int sugars ) {
@@ -312,7 +312,7 @@ public class DiaryEntryForm {
     /**
      * the set entry fibers
      *
-     * @param entryFibers
+     * @param fibers
      *            the entry fibers
      */
     public void setFibers ( int fibers ) {
@@ -332,7 +332,7 @@ public class DiaryEntryForm {
     /**
      * set the entry protein
      *
-     * @param entryProtein
+     * @param protein
      *            the entry protein
      *
      */

@@ -178,6 +178,9 @@ public class DiaryEntry extends DomainObject<DiaryEntry> {
      *            grams of fibers/serving
      * @param protein
      *            grams of protein/serving
+     *            
+     * @param patient
+     * 			  patient that logged the entry
      */
     public DiaryEntry ( Calendar date, Meal meal, String name, int servings, int calories, int fatGrams, int sodium,
             int carbs, int sugars, int fibers, int protein, User patient ) {

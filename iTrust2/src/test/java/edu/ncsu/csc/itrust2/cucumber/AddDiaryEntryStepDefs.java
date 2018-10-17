@@ -2,9 +2,6 @@ package edu.ncsu.csc.itrust2.cucumber;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
-import java.util.List;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
@@ -13,7 +10,6 @@ import org.openqa.selenium.support.ui.Select;
 
 import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
-import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import edu.ncsu.csc.itrust2.models.persistent.DiaryEntry;
 
@@ -95,24 +91,8 @@ public class AddDiaryEntryStepDefs extends CucumberTest {
     }
 
     /**
-     * Check the food diary was added correctly
+     * Check that the diary form was cleared successfully
      */
-    @Then ( "^the entry is added to my food diary$" )
-    public void createdSuccessfully () {
-        waitForAngular();
-        final List<WebElement> entries = driver.findElements( By.name( "diaryTableRow" ) );
-        // diary entry row and daily total row
-        assertEquals( 2, entries.size() );
-        tearDown();
-    }
-
-    @Then ( "^the entry is not added to my food diary$" )
-    public void diaryEntryNotAdded () {
-        waitForAngular();
-        final List<WebElement> entries = driver.findElements( By.name( "diaryTableRow" ) );
-        assertEquals( 0, entries.size() );
-    }
-
     @And ( "^the entry form is not cleared$" )
     public void formCleared () {
         waitForAngular();
@@ -137,23 +117,5 @@ public class AddDiaryEntryStepDefs extends CucumberTest {
         assertFalse( fiberEle.getAttribute( "value" ).isEmpty() );
         final WebElement proteinEle = driver.findElement( By.name( "protein" ) );
         assertFalse( proteinEle.getAttribute( "value" ).isEmpty() );
-    }
-
-    @Then ( "^Then my daily macro-nutrient totals are: <caloriesTotal> "
-            + "calories, <fatTotal>g fat, <sodiumTotal>mg sodium, <carbsTotal>g carbs, <sugarTotal>g "
-            + "sugar, <fiberTotal>g fiber and <proteinTotal>g protein.$" )
-    public void totalsAreCalculated ( String calories, String fat, String sodium, String carbs, String sugar,
-            String fiber, String protein ) {
-        waitForAngular();
-        final List<WebElement> entries = driver.findElements( By.name( "diaryTableRow" ) );
-        // 2 diary entry rows, the second one is the totals
-        final WebElement totals = entries.get( 1 );
-        assertTrue( totals.findElement( By.name( "caloriesCell" ) ).getText().contains( calories ) );
-        assertTrue( totals.findElement( By.name( "fatCell" ) ).getText().contains( fat ) );
-        assertTrue( totals.findElement( By.name( "sodiumCell" ) ).getText().contains( sodium ) );
-        assertTrue( totals.findElement( By.name( "carbsCell" ) ).getText().contains( carbs ) );
-        assertTrue( totals.findElement( By.name( "sugarCell" ) ).getText().contains( sugar ) );
-        assertTrue( totals.findElement( By.name( "fiberCell" ) ).getText().contains( fiber ) );
-        assertTrue( totals.findElement( By.name( "proteinCell" ) ).getText().contains( protein ) );
     }
 }

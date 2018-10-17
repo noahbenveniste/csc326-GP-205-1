@@ -28,9 +28,9 @@ public class AddDiaryEntryStepDefs extends CucumberTest {
      */
     @Given ( "^there are no diary entries for (.+)$" )
     public void noFoodDiary ( final String patient ) {
-        setup();
         DiaryEntry.deleteAll( DiaryEntry.class );
         assertEquals( 0, DiaryEntry.getFoodDiaryEntriesForPatient( patient ).size() );
+        attemptLogout();
     }
 
     /**

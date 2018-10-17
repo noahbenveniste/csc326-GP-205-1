@@ -28,7 +28,6 @@ public class VerifyDiaryEnryTableStepDefs extends CucumberTest {
         final List<WebElement> entries = driver.findElements( By.name( "diaryTableRow" ) );
         // diary entry row and daily total row
         assertEquals( 2, entries.size() );
-        tearDown();
     }
 
     /**

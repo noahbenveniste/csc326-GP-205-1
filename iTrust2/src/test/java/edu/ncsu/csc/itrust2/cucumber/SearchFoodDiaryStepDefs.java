@@ -36,8 +36,8 @@ public class SearchFoodDiaryStepDefs extends CucumberTest {
     public void addDiaryEntry ( String patient, final String date, final int servings, final String name,
             final String meal, final int calories, final int fat, final int sodium, final int carbs, final int sugar,
             final int fiber, final int protein ) throws ParseException {
+
         DiaryEntry.deleteAll( DiaryEntry.class );
-        setup();
         Meal m = null;
         if ( meal.equals( "BREAKFAST" ) ) {
             m = Meal.BREAKFAST;
@@ -59,6 +59,7 @@ public class SearchFoodDiaryStepDefs extends CucumberTest {
                 User.getByName( patient ) );
         de.save();
 
+        attemptLogout();
         driver.get( BASE_URL );
         waitForAngular();
     }

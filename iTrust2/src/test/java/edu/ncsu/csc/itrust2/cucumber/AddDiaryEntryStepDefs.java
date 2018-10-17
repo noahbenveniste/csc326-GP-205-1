@@ -48,7 +48,7 @@ public class AddDiaryEntryStepDefs extends CucumberTest {
     /**
      * Submits a valid diary entry
      */
-    @When ( "^I submit an entry on (.+) that I ate (.+) servings of (.+) for (.+) that had: (.+) calories, (.+)g fat, (.+)mg sodium, (.+)g carbs, (.+)g sugar, (.+)g fiber and (.+)g protein.$" )
+    @When ( "^I submit an entry on (.+) that I ate (.+) servings of (.+) for (.+) that had: (.+) calories, (.+)g fat, (.+)mg sodium, (.+)g carbs, (.+)g sugar, (.+)g fiber and (.+)g protein$" )
     public void fillDiaryFields ( final String date, final String servings, final String name, final String meal,
             final String calories, final String fat, final String sodium, final String carbs, final String sugar,
             final String fiber, final String protein ) {

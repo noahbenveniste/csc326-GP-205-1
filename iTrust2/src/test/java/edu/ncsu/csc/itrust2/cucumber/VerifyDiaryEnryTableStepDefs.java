@@ -44,7 +44,7 @@ public class VerifyDiaryEnryTableStepDefs extends CucumberTest {
     /**
      * Checks that the totals for serving was calculated correctly
      */
-    @Then ( "^the daily macro-nutrient totals are: (.+) calories, (.+)g fat, (.+)mg sodium, (.+)g carbs, (.+)g sugar, (.+)g fiber and (.+)g protein.$" )
+    @Then ( "^the daily macro-nutrient totals are: (.+) calories, (.+)g fat, (.+)mg sodium, (.+)g carbs, (.+)g sugar, (.+)g fiber and (.+)g protein$" )
     public void totalsAreCalculated ( String calories, String fat, String sodium, String carbs, String sugar,
             String fiber, String protein ) {
         waitForAngular();
@@ -62,7 +62,7 @@ public class VerifyDiaryEnryTableStepDefs extends CucumberTest {
     /**
      * Check that the diary form was cleared successfully
      */
-    @Then ( "^I see a diary entry on (.+) that for (.+) servings of (.+) for (.+) that had: (.+) calories, (.+)g fat, (.+)mg sodium, (.+)g carbs, (.+)g sugar, (.+)g fiber and (.+)g protein.$" )
+    @Then ( "^I see a diary entry on (.+) that for (.+) servings of (.+) for (.+) that had: (.+) calories, (.+)g fat, (.+)mg sodium, (.+)g carbs, (.+)g sugar, (.+)g fiber and (.+)g protein$" )
     public void entryIsIncludedInTable ( String date, String servings, String name, String meal, String calories,
             String fat, String sodium, String carbs, String sugar, String fiber, String protein ) {
         waitForAngular();

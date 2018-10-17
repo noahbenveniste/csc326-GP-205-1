@@ -4,10 +4,10 @@ Feature: Search and view patient's food diaries
 	So can monitor their eating habits and guide them towards their goals.
 
 Scenario Outline: View patient's diary entries
-Given <pt> has a diary entry on <date> for <servings> servings of <food> for <meal> that has: <calories> calories, <fat>g fat, <sodium>mg sodium, <carbs>g carbs, <sugar>g sugar, <fiber>g fiber and <protein>g protein.
+Given <pt> has a diary entry on <date> for <servings> servings of <food> for <meal> that has: <calories> calories, <fat>g fat, <sodium>mg sodium, <carbs>g carbs, <sugar>g sugar, <fiber>g fiber and <protein>g protein
 When I log into iTrust2 as a: HCP
 When I search for <pt>'s diary entries
-Then I see a diary entry on <date> that for <servings> servings of <food> for <meal> that had: <calories> calories, <fat>g fat, <sodium>mg sodium, <carbs>g carbs, <sugar>g sugar, <fiber>g fiber and <protein>g protein.
+Then I see a diary entry on <date> that for <servings> servings of <food> for <meal> that had: <calories> calories, <fat>g fat, <sodium>mg sodium, <carbs>g carbs, <sugar>g sugar, <fiber>g fiber and <protein>g protein
 
 Examples:
   | pt       | date       | food  | meal   | servings | calories | fat | sodium | carbs | sugar | fiber | protein | 
@@ -16,10 +16,10 @@ Examples:
   | patient  | 04/01/2018 | bread | DINNER | 1        | 100      | 1   | 180    | 20    | 2     | 10    | 2       |
   
 Scenario Outline: View patient's daily totals
-Given <pt> has a diary entry on 1/01/2018 for <servings> servings of Apple for SNACK that has: <calories> calories, <fat>g fat, <sodium>mg sodium, <carbs>g carbs, <sugar>g sugar, <fiber>g fiber and <protein>g protein.
+Given <pt> has a diary entry on 1/01/2018 for <servings> servings of Apple for SNACK that has: <calories> calories, <fat>g fat, <sodium>mg sodium, <carbs>g carbs, <sugar>g sugar, <fiber>g fiber and <protein>g protein
 When I log into iTrust2 as a: HCP
 When I search for <pt>'s diary entries
-Then the daily macro-nutrient totals are: <caloriesTotal> calories, <fatTotal>g fat, <sodiumTotal>mg sodium, <carbsTotal>g carbs, <sugarTotal>g sugar, <fiberTotal>g fiber and <proteinTotal>g protein.
+Then the daily macro-nutrient totals are: <caloriesTotal> calories, <fatTotal>g fat, <sodiumTotal>mg sodium, <carbsTotal>g carbs, <sugarTotal>g sugar, <fiberTotal>g fiber and <proteinTotal>g protein
 
 Examples:
   | pt       | servings | calories | fat | sodium | carbs | sugar | fiber | protein | caloriesTotal | fatTotal | sodiumTotal | carbsTotal | sugarTotal | fiberTotal | proteinTotal | 

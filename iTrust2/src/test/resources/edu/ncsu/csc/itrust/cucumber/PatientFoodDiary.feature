@@ -7,7 +7,7 @@ Scenario Outline: Submit valid diary entry
 Given there are no diary entries for patient
 When I log in as a patient 
 When I navigate to the diary entry page
-When I submit an entry on <date> that I ate <servings> servings of <food> for <meal> that had: <calories> calories, <fat>g fat, <sodium>mg sodium, <carbs>g carbs, <sugar>g sugar, <fiber>g fiber and <protein>g protein.
+When I submit an entry on <date> that I ate <servings> servings of <food> for <meal> that had: <calories> calories, <fat>g fat, <sodium>mg sodium, <carbs>g carbs, <sugar>g sugar, <fiber>g fiber and <protein>g protein
 Then the entry is added to my food diary
 
 Examples:
@@ -20,7 +20,7 @@ Scenario Outline: Submit invalid diary entry
 Given there are no diary entries for patient
 When I log in as a patient 
 When I navigate to the diary entry page
-When I submit an entry on <date> that I ate <servings> servings of <food> for <meal> that had: <calories> calories, <fat>g fat, <sodium>mg sodium, <carbs>g carbs, <sugar>g sugar, <fiber>g fiber and <protein>g protein.
+When I submit an entry on <date> that I ate <servings> servings of <food> for <meal> that had: <calories> calories, <fat>g fat, <sodium>mg sodium, <carbs>g carbs, <sugar>g sugar, <fiber>g fiber and <protein>g protein
 Then the entry is not added to my food diary
 And the entry form is not cleared
 
@@ -39,7 +39,7 @@ Given there are no diary entries for patient
 When I log in as a patient 
 When I navigate to the diary entry page
 When I submit an entry on 1/01/2018 that I ate <servings> servings of Apple for SNACK that had: <calories> calories, <fat>g fat, <sodium>mg sodium, <carbs>g carbs, <sugar>g sugar, <fiber>g fiber and <protein>g protein.
-Then the daily macro-nutrient totals for <servings> servings are:  <caloriesTotal> calories, <fatTotal>g fat, <sodiumTotal>mg sodium, <carbsTotal>g carbs, <sugarTotal>g sugar, <fiberTotal>g fiber and <proteinTotal>g protein.
+Then the daily macro-nutrient totals for <servings> servings are:  <caloriesTotal> calories, <fatTotal>g fat, <sodiumTotal>mg sodium, <carbsTotal>g carbs, <sugarTotal>g sugar, <fiberTotal>g fiber and <proteinTotal>g protein
 
 Examples:
   | servings | calories | fat | sodium | carbs | sugar | fiber | protein | caloriesTotal | fatTotal | sodiumTotal | carbsTotal | sugarTotal | fiberTotal | proteinTotal | 

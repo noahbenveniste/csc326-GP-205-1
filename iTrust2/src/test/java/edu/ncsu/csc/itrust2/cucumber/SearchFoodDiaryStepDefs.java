@@ -32,7 +32,7 @@ public class SearchFoodDiaryStepDefs extends CucumberTest {
      *
      * @throws ParseException
      */
-    @Given ( "^(.+) has a diary entry on (.+) for (\\d+) servings of (.+) for (.+) that has: (\\d+) calories, (\\d+)g fat, (\\d+)mg sodium, (\\d+)g carbs, (\\d+)g sugar, (\\d+)g fiber and (\\d+)g protein.$" )
+    @Given ( "^(.+) has a diary entry on (.+) for (\\d+) servings of (.+) for (.+) that has: (\\d+) calories, (\\d+)g fat, (\\d+)mg sodium, (\\d+)g carbs, (\\d+)g sugar, (\\d+)g fiber and (\\d+)g protein$" )
     public void addDiaryEntry ( String patient, final String date, final int servings, final String name,
             final String meal, final int calories, final int fat, final int sodium, final int carbs, final int sugar,
             final int fiber, final int protein ) throws ParseException {
@@ -51,12 +51,14 @@ public class SearchFoodDiaryStepDefs extends CucumberTest {
         else if ( meal.equals( "DINNER" ) ) {
             m = Meal.DINNER;
         }
+
         final Date d = ( new SimpleDateFormat( "MM/dd/yyyy" ) ).parse( date );
         final Calendar c = Calendar.getInstance();
         c.setTimeInMillis( d.getTime() );
         final DiaryEntry de = new DiaryEntry( c, m, name, servings, calories, fat, sodium, carbs, sugar, fiber, protein,
                 User.getByName( patient ) );
         de.save();
+
         driver.get( BASE_URL );
         waitForAngular();
     }

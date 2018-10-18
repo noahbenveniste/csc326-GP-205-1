@@ -61,20 +61,20 @@ public class APIFoodDiaryController extends APIController {
      * Retrieves the DiaryEntries for a HCP wanting to access a patient's
      * DiaryEntries
      *
-     * @param patient_id
+     * @param id
      *            name of the patient to get the Diary Entries of
      * @return list of DiaryEntries for the patient with the given name
      */
     @SuppressWarnings ( "all" )
     @GetMapping ( BASE_PATH + "/diaryentries/{patient_id}" )
-    public List<DiaryEntry> getFoodDiaryEntriesForHCP ( @PathVariable ( "patient_id" ) final String patient_id ) {
-        final Patient patient = new Patient( patient_id );
+    public List<DiaryEntry> getFoodDiaryEntriesForHCP ( @PathVariable ( "patient_id" ) final String id ) {
+        final Patient patient = new Patient( id );
         if ( patient == null ) {
             return null;
         }
-        LoggerUtil.log( TransactionType.DIARY_ENTRY_VIEWEDBYHCP, LoggerUtil.currentUser(), patient_id,
-                "HCP retrieved diary entries for patient with username " + patient_id );
-        return DiaryEntry.getFoodDiaryEntriesForHCP( patient_id );
+        LoggerUtil.log( TransactionType.DIARY_ENTRY_VIEWEDBYHCP, LoggerUtil.currentUser(), id,
+                "HCP retrieved diary entries for patient with username " + id );
+        return DiaryEntry.getFoodDiaryEntriesForHCP( id );
     }
 
     // /**

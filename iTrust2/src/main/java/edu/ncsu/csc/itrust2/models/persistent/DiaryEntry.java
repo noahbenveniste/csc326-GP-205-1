@@ -186,7 +186,6 @@ public class DiaryEntry extends DomainObject<DiaryEntry> {
             int carbs, int sugars, int fibers, int protein, User patient ) {
         this.date = date;
         this.meal = meal;
-        this.name = "name";
         this.name = name;
         this.servings = servings;
         this.calories = calories;

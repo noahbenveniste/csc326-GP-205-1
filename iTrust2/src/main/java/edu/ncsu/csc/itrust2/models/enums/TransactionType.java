@@ -350,7 +350,7 @@ public enum TransactionType {
     /**
      * The diary entry viewed by hcp
      */
-    DIARY_ENTRY_VIEWEDBYHCP (1903, "Diary entry(s) viewed by HCP", false);
+    DIARY_ENTRY_VIEWEDBYHCP (1903, "Diary entry(s) viewed by HCP", true);
     /**
      * Creates a TransactionType for logging events
      *

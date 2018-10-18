@@ -3,136 +3,216 @@
 <title>Food Diary Directory</title>
 </head>
 <body th:include="layout :: body" th:with="content=~{::content}">
-	<div th:fragment="content">
+	<div th:fragment="content" ng-app="diaryAppHCP" ng-controller="diaryCtrl as ctrl">
 		<h1>Search for Patient's Food Diary</h1>
-		<div ng-app="diaryApp" ng-controller="diaryCtrl as ctrl">
-			<div class="container">
-				<div class="row">
-					<div class="col-md-12">
-						<div class="panel panel-primary">
-	
-							<!-- log entry header -->
-							<div class="panel-heading">
-								<h3></h3>
-							</div>
-							<div class="panel-body">
-								<table class="table table-bordered" name="log_table">
-	
-									<!-- table column headers -->
-									<thead>
-										<tr>
-											<th>Date</th>
-											<th>Meal</th>
-											<th>Food Name</th>
-											<th>Servings</th>
-											<th>Calories (per serving)</th>
-											<th>Fat (g)</th>
-											<th>Sodium (mg)</th>
-											<th>Carbs (g)</th>
-											<th>Sugar (g)</th>
-											<th>Fiber (g)</th>
-											<th>Protein (g)</th>
-										</tr>
-									</thead>
-	
-									<!-- Diary Entry for every row, ordered by date -->
-									<tbody>
-										<tr name="diaryTableRow" ng-repeat="e in ctrl.diaryEntries">
-											<td name="dateCell">{{e.date}}</td>
-											<td name="mealCell">{{e.meal}}</td>
-											<td name="nameCell">{{e.name}}</td>
-											<td name="servingsCell">{{e.servings}}</td>
-											<td name="caloriesCell">{{e.calories}}</td>
-											<td name="fatCell">{{e.fat}}</td>
-											<td name="sodiumCell">{{e.soduim}}</td>
-											<td name="carbsCell">{{e.carbs}}</td>
-											<td name="sugarCell">{{e.sugar}}</td>
-											<td name="fiberCell">{{e.fiber}}</td>
-											<td name="proteinCell">{{e.protein}}</td>
-										</tr>
-									</tbody>
-								</table>
-								
-								
-							<br>
-
 							<!-- container for searching diary entries -->
-							<div class="row">
-								<div class="col-md-12">
-									<div class="panel panel-default">
-										<div class="panel-heading ">Search Food Diary Entries by Patient</div>
-										<div class="panel-body">
-											<form class="form-horizontal" role="form" name="viewLogForm"
-												ng-submit="ctrl.searchByDate()">
-												<br>
-
-												<!-- row that contains all interactive fields -->
-												<div class="row">
-
-													<!-- start date -->
-													<div class="col-md-6">
-														<label>Patient name:</label>
-														<div class="row">
-															<div class="col-md-7">
-																<input type="text" class="form-control"
-																	placeholder="Ex. John Doe" name="patientName"
-																	ng-model="ctrl.patientName" required />
-															</div>
-														</div>
-													</div>
-
-													<!-- submit button -->
-													<div class="col-md-6">
-														<label>Submit:</label>
-														<div class="row">
-															<div class="col-md-4">
-																<button type="submit" class="btn btn-success"
-																	ng-disabled="!viewLogForm.$valid"
-																	name="submit">Search For Diary Entries</button>
-															</div>
-														</div>
-													</div>
-
-												</div>
-											</form>
-											<br/>	
+		<div class="generic-container">
+			<div class="row">
+				<div class="col-md-12">
+					<div class="panel panel-default">
+						<div class="panel-heading ">Search Food Diary Entries by username</div>
+						<div class="panel-body">
+							<form class="form-horizontal" role="form" name="viewLogForm" ng-submit="ctrl.getEntriesName()">
+								<br>
+								<!-- row that contains all interactive fields -->
+								<div class="row">
+									<!-- name -->
+									<div class="col-md-6">
+										<label>Patient name:</label>
+										<div class="row">
+											<div class="col-md-7">
+												<input type="text" class="form-control"
+													placeholder="Ex. John Doe" name="searchPatientName"
+													ng-model="ctrl.searchPatientName" required />
+											</div>
 										</div>
 									</div>
-							</div>
+									<!-- submit button -->
+									<div class="col-md-6">
+										<label>Submit:</label>
+										<div class="row">
+											<div class="col-md-4">
+												<button type="submit" class="btn btn-success"
+													ng-disabled="!viewLogForm.$valid"
+													name="submit">Search For Diary Entries</button>
+											</div>
+										</div>
+									</div>
+								</div>
+							</form>
+							<br/>	
 						</div>
 					</div>
 				</div>
 			</div>
-			<script>
-			var App = angular.module('diaryApp',[]);
-			
-			angular.module("diaryApp").controller('diaryCtrl', function($scope, $http, $filter) {
-				var self = this;
-				self.diaryEntries = [];
-				self.patientName = "";
-				
-				// fills in diary with fake entries
-				for (var i = 0; i < 10; i++) {
-					self.diaryEntries.push({
-						date: "12/10/1996",
-						meal: "lunch",
-						name: "bagel",
-						servings: i % 3 + 1,
-						calories: i * 13 + 100,
-						fat: i * 4 + i % 2,
-						soduim: i + (i % 2) * 3,
-						carbs: i % 3 * 2,
-						sugar: i % 2 + 10 + i,
-						fiber: i + i % 3,
-						protein: i % 4 
-					});
-					
-				}
-				
-				
-			});
-			</script>
 		</div>
+		<div th:include="diaryTable :: diaryTable"></div>
+		<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.6.5/angular-mocks.js"></script>
+	    <script th:inline="javascript">
+			/* Otherwise Thymeleaf tries to parse Javascript as XML and breaks itself sometimes.  Sigh */
+			/*<![CDATA[*/
+			var app = angular.module('diaryAppHCP',['ngMockE2E']);
+			
+			angular.module('diaryAppHCP').factory('diaryService', ['$http', '$q', '$httpBackend', function( $http, $q, $httpBackend) {
+				
+				var REST_SERVICE_URI = '/iTrust2/api/v1/diaryentries';
+				
+				// Initializes data for mock GET request
+				self.genDiaryEntries = function (name) {
+					var mockDiaryEntries = [];
+					for (var i = 0; i < 10; i++) {
+						mockDiaryEntries.push({
+						    "meal": "DINNER",
+						    "date": {
+						      "year": 2018,
+						      "month": 5,
+						      "dayOfMonth": i % 3 + 5,
+						      "hourOfDay": 19,
+						      "minute": 52,
+						      "second": 48
+						    },
+						    "name": i % 2 == 0 ? "bagel" : "waffle",
+						    "servings": i % 2 + 1,
+						    "calories": i * 13 + 112,
+						    "fatGrams": i * 4 + i % 2,
+						    "sodium": i + (i % 2) * 3,
+						    "carbs": i % 3 * 2 + 1,
+						    "sugars": i % 2 + 10 + i,
+						    "fibers": i + i % 3,
+						    "protein": i % 4 + 3,
+						    "patient": {
+						      "username": name,
+						      "password": "$2FKANF492AS8H9F7NJ9RC3s.",
+						      "enabled": 1,
+						      "role": "ROLE_PATIENT",
+						    },
+						    "id": 546
+						  });
+					}
+					return mockDiaryEntries;
+				}
+
+				$httpBackend.when("GET", function(url) {
+					return url.startsWith(REST_SERVICE_URI);
+				}).passThrough();
+				/*$httpBackend.whenRoute('GET', REST_SERVICE_URI + '/:name')
+				   .respond(function(method, url, data, headers, params) {
+				   return [200, self.genDiaryEntries(params.name)];
+				});
+				*/
+				// Services
+				var factory = {
+					getEntriesNameService: getEntriesNameService
+				};
+				
+				return factory;
+				
+				function getEntriesNameService(name) {
+					var deferred = $q.defer();
+					$http.get(REST_SERVICE_URI + '/' + name)
+						.then(
+						function(response) {
+							deferred.resolve(response.data);
+						},
+						function(errResponse) {
+							console.error('Error while getting diary entries (getEntriesService)')
+							deferred.reject(errResponse);
+						}
+					);
+					return deferred.promise;
+				}
+
+			}]);
+			
+			/**
+			 * Handles getting Food Diary entries by patient name and filling the table
+			 */
+			angular.module('diaryAppHCP').controller('diaryCtrl', ['$scope', 'diaryService', function( $scope, diaryService, diaryTable ) {
+				var self = this;
+				
+				self.diaryEntryMaster = [];
+				self.remoteUser = /*[[${#httpServletRequest.remoteUser}]]*/null;
+				$scope.patientName = "...";
+				self.searchPatientName = null;
+				
+				/** Updates the diary entry table for a HCP user or a patient */
+				function updateDiaryTable(entries) {
+					
+					$scope.success = false;
+					$scope.failure = false;
+					
+					if (entries.length == 0) {
+						$scope.failure = true;
+						self.diaryEntryMaster = []; //Clears the entry table
+					} else {
+
+						// translate DiaryEntry.date to Date object
+						for (var i = 0; i < entries.length; i++) {
+							entries[i].date = new Date(entries[i].date.year, entries[i].date.month, entries[i].date.dayOfMonth);
+						}
+						// sort entries by date so they appear in order
+						entries.sort(function(a, b){return b.date.getTime() - a.date.getTime()});
+						
+						// Update the master list of diary entries with daily totals
+						self.diaryEntryMaster = [];
+						var dt = null;
+						var entries_and_total = [];
+						var totals_row_temp = function() {
+							return {
+								patientName: "", date: "", mealType: "", name: "Daily Total",
+								servings: 0, calories: 0, fatGrams: 0, sodium: 0, carbs: 0, sugars: 0,
+								fibers: 0, protein: 0, style: "font-weight: bold; background-color: #EEEEEE;"
+							};
+						};
+						var totals_row = totals_row_temp();
+						
+						for (var i = 0; i < entries.length; i++) {
+							
+							// calculate totals of diary entries. must multiply by servings
+							var srv = entries[i].servings;
+							totals_row.servings += srv;
+							totals_row.calories += srv * entries[i].calories;
+							totals_row.fatGrams += srv * entries[i].fatGrams;
+							totals_row.sodium += srv * entries[i].sodium;
+							totals_row.carbs += srv * entries[i].carbs;
+							totals_row.sugars += srv * entries[i].sugars;
+							totals_row.fibers += srv * entries[i].fibers;
+							totals_row.protein += srv * entries[i].protein;
+							
+							self.diaryEntryMaster.push(entries[i]);
+							
+							if (i == entries.length - 1 || entries[i].date.getTime() > entries[i + 1].date.getTime()) {
+								self.diaryEntryMaster.push(totals_row);
+								totals_row = totals_row_temp();
+							}
+							
+						}
+						
+						// Get the user's name
+						if ( self.diaryEntryMaster.length != 0 ) {
+							$scope.patientName = self.diaryEntryMaster[0].patient.username;
+						}
+						
+						$scope.success = true;
+					}
+				}
+
+				/** Gets diary entries given a patients name */
+				self.getEntriesName = function() {
+					diaryService.getEntriesNameService(self.searchPatientName).then(updateDiaryTable, function(err) {
+							console.error('Error while getting diary entries (getEntriesName)');
+						});
+				}
+			}]);
+			/*]]>*/
+		</script>
+		
+		<div ng-show="success">Diary Entries Found</div>
+		<div ng-show="failure">No diary entries found for user.</div>
+		
+		<!-- Navigate back to HCP landing page -->
+		<a href="/iTrust2/hcp/index">HCP Home Page</a>
+		
 	</div>
 </body>
 </html>

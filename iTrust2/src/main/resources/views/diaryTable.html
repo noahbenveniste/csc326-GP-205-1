@@ -1,0 +1,53 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring4-3.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+	<div th:fragment="diaryTable">
+		<!-- Table of Food Diaries -->
+		<!-- THIS ASSUMES ctrl IS A DiaryCtrl WITH patientName AND diaryEntryMaster  -->
+		<div class="panel panel-primary">
+			<!-- Diary entry header -->
+			<div class="panel-heading">
+				<h3>{{patientName}}</h3>
+			</div>
+	
+			<div class="panel-body">
+				<!-- TODO: make this table scrollable -->
+				<table class="table table-bordered" name="diary_table">
+	
+					<!-- Table column headers -->
+					<thead>
+						<tr>
+							<th>Date</th>
+							<th>Meal</th>
+							<th>Food Name</th>
+							<th>Servings</th>
+							<th>Calories (per serving)</th>
+							<th>Fat (g)</th>
+							<th>Sodium (mg)</th>
+							<th>Carbs (g)</th>
+							<th>Sugar (g)</th>
+							<th>Fiber (g)</th>
+							<th>Protein (g)</th>
+						</tr>
+					</thead>
+					<!-- One diary entry per row, most recent entries at the top -->
+					<tbody>
+						<tr name="diaryTableRow" ng-repeat="e in ctrl.diaryEntryMaster track by $index">
+							<td style="{{e.style}}" name="dateCell">{{e.date | date:'MM/dd/yyyy'}}</td>
+							<td style="{{e.style}}" name="mealCell">{{e.meal}}</td>
+							<td style="{{e.style}}" name="nameCell">{{e.name}}</td>
+							<td style="{{e.style}}" name="servingsCell">{{e.servings}}</td>
+							<td style="{{e.style}}" name="caloriesCell">{{e.calories}}</td>
+							<td style="{{e.style}}" name="fatCell">{{e.fatGrams}}</td>
+							<td style="{{e.style}}" name="sodiumCell">{{e.sodium}}</td>
+							<td style="{{e.style}}" name="carbsCell">{{e.carbs}}</td>
+							<td style="{{e.style}}" name="sugarCell">{{e.sugars}}</td>
+							<td style="{{e.style}}" name="fiberCell">{{e.fibers}}</td>
+							<td style="{{e.style}}" name="proteinCell">{{e.protein}}</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+</html>

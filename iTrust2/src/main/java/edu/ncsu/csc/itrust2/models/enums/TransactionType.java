@@ -124,18 +124,6 @@ public enum TransactionType {
     APPOINTMENT_REQUEST_UPDATED ( 652, "Appointment request was updated", true ),
 
     /**
-     * The diary entry subimitted by patient
-     */
-    DIARY_ENTRY_SUBMITTED( 740, "Diary entry created by patient", true ),
-    /**
-     * The diary entry viewed
-     */
-    DIARY_ENTRY_ViEWED (741, "Diary entry(s) viewed", true),
-    /**
-     * The diary entry viewed by hcp
-     */
-    DIARY_ENTRY_VIEWEDBYHCP (742, "Diary entry(s) viewed by HCP", false),
-    /**
      * Create basic health metrics
      */
     OFFICE_VISIT_CREATE ( 800, "Create office visit for patient", true ),
@@ -349,8 +337,20 @@ public enum TransactionType {
     /**
      * Patient views lab procedures.
      */
-    PATIENT_VIEW_PROCS ( 1711, "Patient Views Procedures", false );
+    PATIENT_VIEW_PROCS ( 1711, "Patient Views Procedures", false ),
 
+    /**
+     * The diary entry subimitted by patient
+     */
+    DIARY_ENTRY_SUBMITTED( 1901, "Diary entry created by patient", true ),
+    /**
+     * The diary entry viewed by patient
+     */
+    DIARY_ENTRY_ViEWED (1902, "Diary entry(s) viewed", true),
+    /**
+     * The diary entry viewed by hcp
+     */
+    DIARY_ENTRY_VIEWEDBYHCP (1903, "Diary entry(s) viewed by HCP", false);
     /**
      * Creates a TransactionType for logging events
      *

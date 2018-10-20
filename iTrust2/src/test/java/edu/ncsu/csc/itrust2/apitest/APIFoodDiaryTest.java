@@ -116,6 +116,8 @@ public class APIFoodDiaryTest {
         
         mvc.perform( post( "/api/v1/diaryentries" ).contentType( MediaType.APPLICATION_JSON )
                 .content( TestUtils.asJsonString( entry ) ) ).andExpect(status().isOk());
+        
+        
     }
 
     /**
@@ -182,5 +184,48 @@ public class APIFoodDiaryTest {
         // .andExpect( content().contentType(
         // MediaType.APPLICATION_JSON_UTF8_VALUE ) );
 
+    }
+    
+    @Test
+    public void blackBoxTests() throws Exception {
+    	//Creates HCP and Patient users for login purposes. 
+    	final UserForm hcp = new UserForm( "hcp", "123456", Role.ROLE_HCP, 1 );
+        mvc.perform( post( "/api/v1/users" ).contentType( MediaType.APPLICATION_JSON )
+                .content( TestUtils.asJsonString( hcp ) ) );
+
+        final UserForm patient = new UserForm( "patient", "123456", Role.ROLE_PATIENT, 1 );
+        mvc.perform( post( "/api/v1/users" ).contentType( MediaType.APPLICATION_JSON )
+                .content( TestUtils.asJsonString( patient ) ) );
+        //makes sure there are no diary entries in the database before testing.
+        mvc.perform( delete( "/api/v1/diaryentries" ) );
+
+        //Create an entry to be added to the database.
+        final DiaryEntryForm entry = new DiaryEntryForm();
+        entry.setDate( Calendar.getInstance() );
+        entry.setMeal( Meal.BREAKFAST );
+        entry.setName( "name" );
+        entry.setServings( 1 );
+        entry.setCalories( 1 );
+        entry.setFatGrams( 1 );
+        entry.setSodium( 1 );
+        entry.setCarbs( 1 );
+        entry.setSugars( 1 );
+        entry.setFibers( 1 );
+        entry.setProtein( 1 );
+        entry.setPatient( "patient" );
+    	//Test 1: Create food diary in a database
+        mvc.perform( post( "/api/v1/diaryentries" ).contentType( MediaType.APPLICATION_JSON )
+                .content( TestUtils.asJsonString( entry ) ) ).andExpect(status().isOk());
+        //Test 2: Get food diary entries of patient
+        mvc.perform( get( "/api/v1/diaryentries" ) )
+        .andExpect( content().contentType( MediaType.APPLICATION_JSON_UTF8_VALUE ) ).andExpect(status().isOk());
+        //Test 3: Retrieve patient's food diaries with an invalid name in the database
+        mvc.perform( get( "/api/v1/diaryentries/" + "1111" ) )
+        .andExpect( content().contentType( MediaType.APPLICATION_JSON_UTF8_VALUE ) ).andExpect(status().isOk());
+        //Test 4: Retrieve patient's food diaries with a valid name in the database
+        mvc.perform( get( "/api/v1/diaryentries/" + patient.getUsername() ) )
+        .andExpect( content().contentType( MediaType.APPLICATION_JSON_UTF8_VALUE ) ).andExpect(status().isOk());
+        //Test 5: Delete all food diary entries
+        mvc.perform( delete( "/api/v1/diaryentries" ) ).andExpect(status().isOk());
     }
 }

@@ -12,6 +12,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.criterion.Criterion;
@@ -111,27 +112,35 @@ public class DiaryEntry extends DomainObject<DiaryEntry> {
     private String   name;
     /** number of servings */
     @NotNull
+    @Min ( 1 )
     private int      servings;
     /** number of calories */
     @NotNull
+    @Min ( 0 )
     private int      calories;
     /** grams of fat per serving */
     @NotNull
+    @Min ( 0 )
     private int      fatGrams;
     /** milligrams of sodium per serving */
     @NotNull
+    @Min ( 0 )
     private int      sodium;
     /** grams of carbs per serving */
     @NotNull
+    @Min ( 0 )
     private int      carbs;
     /** grams of sugars per serving */
     @NotNull
+    @Min ( 0 )
     private int      sugars;
     /** grams of fiber per serving */
     @NotNull
+    @Min ( 0 )
     private int      fibers;
     /** grams of protein per serving */
     @NotNull
+    @Min ( 0 )
     private int      protein;
 
     /**
@@ -178,12 +187,13 @@ public class DiaryEntry extends DomainObject<DiaryEntry> {
      *            grams of fibers/serving
      * @param protein
      *            grams of protein/serving
-     *            
+     * 
      * @param patient
-     * 			  patient that logged the entry
+     *            patient that logged the entry
      */
-    public DiaryEntry ( Calendar date, Meal meal, String name, int servings, int calories, int fatGrams, int sodium,
-            int carbs, int sugars, int fibers, int protein, User patient ) {
+    public DiaryEntry ( final Calendar date, final Meal meal, final String name, final int servings, final int calories,
+            final int fatGrams, final int sodium, final int carbs, final int sugars, final int fibers,
+            final int protein, final User patient ) {
         this.date = date;
         this.meal = meal;
         this.name = name;
@@ -204,7 +214,7 @@ public class DiaryEntry extends DomainObject<DiaryEntry> {
      * @param form
      *            DiaryEntryForm object to create a DiaryEntry from
      */
-    public DiaryEntry ( DiaryEntryForm form ) {
+    public DiaryEntry ( final DiaryEntryForm form ) {
         this.date = form.getDate();
         this.meal = form.getMeal();
         this.name = form.getName();

@@ -117,8 +117,6 @@
 			angular.module('diaryApp').controller('diaryCtrl', ['$scope', 'diaryService', function( $scope, diaryService ) {
 				var self = this;
 				
-				// TODO: update this data format based on the JSON format of the DiaryEntry.java class when it's finished
-				
 				// This code is to ensure that the day is correct for the date. Since UTC is 4 hours ahead, at 8 pm EST
 				// the date rolls over to the next day. By subtracting off 4 hours, the date would roll back to the
 				// correct date for EST.
